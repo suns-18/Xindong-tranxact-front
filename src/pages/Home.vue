@@ -1,9 +1,11 @@
 <script setup lang="ts">
+
 </script>
 
 <template>
-    我来组成侧栏
+    <div>我是主页</div>
 </template>
 
 <style scoped>
+
 </style>
