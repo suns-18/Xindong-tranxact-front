@@ -1,6 +1,11 @@
 <script setup lang="ts">
 import {useRouter} from "vue-router";
 
+/**
+ * 写给前端同学
+ * 有空可以看我的仓库，以前写的问卷系统有个登陆的代码，可以参考
+ * 这里用户名不输入邮箱会有错误提示，好好利用一下这个机制
+ */
 const router = useRouter()
 const doLogin = async () => {
     await router.push("/")
