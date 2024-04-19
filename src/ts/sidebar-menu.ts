@@ -9,18 +9,17 @@ const menu: MenuItem[] = [
     {
         title: "首页", path: "/", icon: ""
     }, {
-        title: "业务办理", path: "/test", icon: "",
-        subItems: [
-            {
-                title: "业务1", path: "/", icon: ""
-            }
-        ]
+        title: "受理", path: "/accept", icon: "",
     }, {
-        title: "首页", path: "/1", icon: ""
+        title: "办理", path: "/transact", icon: ""
     }, {
-        title: "首页", path: "/2", icon: ""
+        title: "非临柜", path: "/nonCounter", icon: ""
     }, {
-        title: "首页", path: "/3", icon: ""
+        title: "查询", path: "/search", icon: ""
+    }, {
+        title: "管理", path: "/manage", icon: ""
+    }, {
+        title: "清算", path: "/liquidation", icon: ""
     },
 ]
 export default menu
