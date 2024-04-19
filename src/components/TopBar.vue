@@ -38,13 +38,18 @@ import navbarMenu from "@/ts/topbar-menu.ts";
                 <li v-for="(item, index) in navbarMenu">
                     <details v-if="item.subItems">
                         <summary class="font-sans">{{ item.title }}</summary>
-                        <ul class="p-2 bg-blue-600">
+                        <ul class="p-2 bg-blue-600 w-full">
                             <li v-for="(subItem) in item.subItems">
-                                <router-link class="visited:text-white" :to="subItem.path">{{ subItem.title }}</router-link>
+                                <router-link class="visited:text-white"
+                                             :to="subItem.path">
+                                    {{ subItem.title }}
+                                </router-link>
                             </li>
                         </ul>
                     </details>
-                    <router-link :to="item.path" v-else class="font-sans visited:text-white">{{ item.title }}</router-link>
+                    <router-link :to="item.path" v-else class="font-sans visited:text-white">
+                        {{ item.title }}
+                    </router-link>
                 </li>
             </ul>
         </div>

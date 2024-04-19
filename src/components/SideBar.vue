@@ -11,7 +11,7 @@ import sidebarMenu from "@/ts/sidebar-menu.ts";
                 <ul class="flex flex-col flex-1 gap-1 py-3">
                     <li class="px-3 cursor-pointer select-none" v-for="(item) in sidebarMenu">
                         <router-link :to="item.path"
-                                     class="flex items-center gap-3 p-3 transition-colors rounded text-slate-700 hover:text-gray-100 hover:bg-blue-400 focus:bg-blue-400 aria-[current=page]:text-blue-700 aria-[current=page]:bg-blue-400 ">
+                                     class="flex items-center gap-3 p-3 transition-colors rounded text-slate-700 hover:text-gray-100 hover:bg-blue-400 focus:bg-blue-400 aria-[current=page]:text-cyan-50 aria-[current=page]:bg-blue-400 ">
                             <div class="flex items-center self-center">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                                      stroke-width="1.5" stroke="currentColor" class="w-6 h-6"

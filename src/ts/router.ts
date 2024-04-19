@@ -11,7 +11,43 @@ const routes = [
             meta: {
                 title: '首页 - 信东交易系统'
             }
-        },]
+        },{
+            path: '/accept',
+            component: () => import('../pages/Accept.vue'),
+            meta: {
+                title: '受理 - 信东交易系统'
+            }
+        },{
+            path: '/transact',
+            component: () => import('../pages/Transact.vue'),
+            meta: {
+                title: '办理 - 信东交易系统'
+            }
+        },{
+            path: '/nonCounter',
+            component: () => import('../pages/NonCounter.vue'),
+            meta: {
+                title: '非临柜 - 信东交易系统'
+            }
+        },{
+            path: '/search',
+            component: () => import('../pages/Search.vue'),
+            meta: {
+                title: '办理 - 信东交易系统'
+            }
+        },{
+            path: '/manage',
+            component: () => import('../pages/Manage.vue'),
+            meta: {
+                title: '办理 - 信东交易系统'
+            }
+        },{
+            path: '/liquidation',
+            component: () => import('../pages/Liquidation.vue'),
+            meta: {
+                title: '清算 - 信东交易系统'
+            }
+        }]
     }, {
         path: '/login',
         component: () => import('../pages/Login.vue'),
