@@ -2,7 +2,7 @@
 </script>
 
 <template>
-    <footer class="footer footer-center p-4 bg-base-300 text-base-content select-none">
+    <footer class="footer footer-center p-4 mt-auto mb-0 bg-base-300 text-base-content select-none">
         <aside>
             <p>Copyright © 2024 - Suns18 Studio</p>
         </aside>
