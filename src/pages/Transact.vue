@@ -1,9 +1,10 @@
 <script setup lang="ts">
 
+import ComingSoon from "@/pages/error/ComingSoon.vue";
 </script>
 
 <template>
-Transact
+    <ComingSoon/>
 </template>
 
 <style scoped>
