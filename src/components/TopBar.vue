@@ -20,8 +20,8 @@ import DropdownMenu from "@/components/DropdownMenu.vue";
             text-center justify-items-center w-full
       font-sans font-bold cursor-default select-none lg:px-16">信东XAct金融交易平台</a>
         </div>
-        <div class="navbar-center hidden lg:flex">
-            <ul class="menu menu-horizontal px-1 w-full">
+        <div class="navbar-center hidden">
+            <ul class="menu menu-horizontal px-1 w-full text-base">
                 <li v-for="(item, index) in navbarMenu">
                     <details v-if="item.subItems">
                         <summary class="font-sans">{{ item.title }}</summary>
