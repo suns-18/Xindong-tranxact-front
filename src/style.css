@@ -11,3 +11,41 @@
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
 }
+@layer{
+	.chip-green{
+		@apply inline-flex items-center justify-center h-8 gap-2
+		px-4 font-medium tracking-wide text-white
+		transition duration-300 rounded whitespace-nowrap
+		bg-emerald-500 hover:bg-emerald-600 focus:bg-emerald-700
+		focus-visible:outline-none disabled:cursor-not-allowed
+		disabled:border-emerald-300 disabled:bg-emerald-300 disabled:shadow-none text-sm
+	}
+	.chip-blue{
+		@apply inline-flex items-center justify-center h-8 gap-2
+		px-4 font-medium tracking-wide text-white
+		transition duration-300 rounded whitespace-nowrap
+		bg-blue-500 hover:bg-blue-600 focus:bg-blue-700
+		focus-visible:outline-none disabled:cursor-not-allowed
+		disabled:border-blue-300 disabled:bg-blue-300 disabled:shadow-none text-sm
+	}
+	.chip-orange{
+		@apply inline-flex items-center justify-center h-8 gap-2
+		px-4 font-medium tracking-wide text-white
+		transition duration-300 rounded whitespace-nowrap
+		bg-orange-500 hover:bg-orange-600 focus:bg-orange-700
+		focus-visible:outline-none disabled:cursor-not-allowed
+		disabled:border-orange-300 disabled:bg-orange-300 disabled:shadow-none text-sm
+	}
+	.chip-red{
+		@apply inline-flex items-center justify-center h-8 gap-2
+		px-4 font-medium tracking-wide text-white
+		transition duration-300 rounded whitespace-nowrap
+		bg-red-500 hover:bg-red-600 focus:bg-red-700
+		focus-visible:outline-none disabled:cursor-not-allowed
+		disabled:border-red-300 disabled:bg-red-300 disabled:shadow-none text-sm
+	}
+	.section-title{
+		@apply bg-blue-100 text-blue-800 text-xl font-medium me-2 px-2.5 py-2 rounded
+		border border-blue-400 w-full
+	}
+}
