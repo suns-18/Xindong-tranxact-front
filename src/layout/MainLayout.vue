@@ -9,7 +9,7 @@ import Footer from "@/components/Footer.vue";
     <header>
         <Top-bar></Top-bar>
     </header>
-    <main class="grid lg:grid-cols-12 md:grid-cols-12">
+    <main class="grid lg:grid-cols-12 md:grid-cols-12 min-h-full">
         <div class="lg:block lg:col-span-2 md:block md:col-span-3 sm:hidden xs:hidden hidden">
             <Side-Bar></Side-Bar>
         </div>
@@ -17,9 +17,7 @@ import Footer from "@/components/Footer.vue";
             <router-view></router-view>
         </div>
     </main>
-    <div>
-        <Footer></Footer>
-    </div>
+    <Footer></Footer>
 </template>
 
 <style scoped>
