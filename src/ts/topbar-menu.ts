@@ -6,7 +6,14 @@ interface MenuItem {
 
 const menu: MenuItem[] = [
     {title: "首页", path: "/"},
-    {title: "受理", path: "/accept"},
+    {title: "受理", path: "/accept",
+        subItems: [
+            {title: "受理中心", path: "/accept"},
+            {title: "客户开户", path: "/accept/register"},
+            {title: "机构开户", path: "/accept/1"},
+            {title: "产品开户", path: "/accept/2"},
+        ]
+    },
     {
         title: "办理", path: "/",
         subItems: [
