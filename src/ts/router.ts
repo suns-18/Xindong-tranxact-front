@@ -1,4 +1,4 @@
-import {createRouter, createWebHistory} from "vue-router";
+import {createRouter, createWebHistory,} from "vue-router";
 
 const routes = [
     {
@@ -11,43 +11,66 @@ const routes = [
             meta: {
                 title: '首页 - 信东交易系统'
             }
-        },{
+        }, {
             path: '/accept',
             component: () => import('../pages/Accept.vue'),
             meta: {
                 title: '受理 - 信东交易系统'
-            }
-        },{
+            },
+            name: 'acceptRoot',
+            children: [
+                {
+                    path: '/accept/register',
+                    component: () => import('../pages/accept/Register.vue'),
+                    meta: {
+                        title: '客户开户 - 受理 - 信东交易系统'
+                    },
+                }, //404 Handler
+                {
+                    path: '/accept/:pathMatch(.*)*',
+                    component: () => import('../pages/error/ComingSoon.vue'),
+                    meta: {
+                        title: "开发中 - 信东交易系统"
+                    }
+                }]
+        }, {
             path: '/transact',
             component: () => import('../pages/Transact.vue'),
             meta: {
                 title: '办理 - 信东交易系统'
             }
-        },{
+        }, {
             path: '/nonCounter',
             component: () => import('../pages/NonCounter.vue'),
             meta: {
                 title: '非临柜 - 信东交易系统'
             }
-        },{
+        }, {
             path: '/search',
             component: () => import('../pages/Search.vue'),
             meta: {
                 title: '办理 - 信东交易系统'
             }
-        },{
+        }, {
             path: '/manage',
             component: () => import('../pages/Manage.vue'),
             meta: {
                 title: '办理 - 信东交易系统'
             }
-        },{
+        }, {
             path: '/liquidation',
             component: () => import('../pages/Liquidation.vue'),
             meta: {
                 title: '清算 - 信东交易系统'
             }
-        }]
+        }, //404 Handler
+            {
+                path: '/:pathMatch(.*)*',
+                component: () => import('../pages/error/ComingSoon.vue'),
+                meta: {
+                    title: "开发中 - 信东交易系统"
+                }
+            }]
     }, {
         path: '/login',
         component: () => import('../pages/Login.vue'),
@@ -59,6 +82,19 @@ const routes = [
         component: () => import('../pages/Logout.vue'),
         meta: {
             title: '退出登录 - 信东交易系统'
+        }
+    }, {
+        path: '/e/msg',
+        component: () => import('../pages/experimental/MessageSender.vue'),
+        meta: {
+            title: '信息服务 - 信东交易系统'
+        }
+    }, //404 Handler
+    {
+        path: '/:pathMatch(.*)*',
+        component: () => import('../pages/error/ComingSoon.vue'),
+        meta: {
+            title: "开发中 - 信东交易系统"
         }
     }
 ]
