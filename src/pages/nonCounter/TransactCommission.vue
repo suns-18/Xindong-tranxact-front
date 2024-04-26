@@ -42,12 +42,6 @@ const searchCustomers = async () => {
     primeAccount.value = resp.data['data']
 
     if (!customer.value) return
-    resp = await axios.get(`/followAccount/getByPrimeAccountId?primeAccountId=${customerId.value}`)
-    if (!resp.data) return
-    followAccounts.value.length = 0
-    followAccounts.value = resp.data["data"]
-
-    if (!customer.value) return
     resp = await axios.get(`/position/getByPrimeAccountId?primeAccountId=${customerId.value}`)
     if (!resp.data) return
     fullPosition.value = resp.data["data"]
@@ -58,7 +52,7 @@ const searchCustomers = async () => {
 
     let relMarketInfo: MarketInfo[] = []
     await Promise.all(position.map(async (item) => {
-        let r = await getMarketByStockId(item.stockId)
+        let r = await getMarketInfoByStockId(item.stockId)
         if (r) relMarketInfo.push(r)
     }))
     fullPosition.value.length = 0
@@ -110,14 +104,15 @@ const selectStock = async (item: Stock) => {
 
     commissionRequest.value = {
         customerId: customer.value.id,
-        orderInfo: {
-            orderPrice: 0,
-            orderAmount: 0,
-            stockId: stock.value.id,
-            stkCls: stock.value.stkCls,
-            unit: marketInfo.value
-        }
+        orderInfo: {}
     }
+
+    if (!customer.value) return
+    resp = await axios.get(`/followAccount/getByPrimeAccountId?primeAccountId=${customerId.value}`)
+    if (!resp.data) return
+    followAccounts.value.length = 0
+    let fAccountlist = resp.data["data"]
+    followAccounts.value = fAccountlist.filter((item) => item.market == stock.value.market)
 }
 const doQueryStock = async () => {
     if (!queryStockId.value.length) return
@@ -171,7 +166,7 @@ interface FullPosition {
 
 const fullPosition = ref<FullPosition[]>([])
 
-const getMarketByStockId = async (id: string) => {
+const getMarketInfoByStockId = async (id: string) => {
     let resp = await axios.get(`/marketInfo/getByStockId?id=${id}`)
     if (!resp.data) return
     return resp.data.data
@@ -186,6 +181,9 @@ const okCommission = () => {
 }
 const submitCommission = async () => {
     showBeforeSubmit.value = false
+    commissionRequest.value.orderInfo.stockId = stock.value.id
+
+
     try {
         let resp = await axios.post("/orderInfo/doOrder", commissionRequest.value)
         if (!resp.data) {
@@ -414,8 +412,8 @@ const units = ref<string[]>([])
                             <select v-if="commissionRequest"
                                     v-model="commissionRequest.orderInfo.trdId"
                                     class="select select-bordered select-sm w-48">
-                                <option selected value="0">买入</option>
-                                <option value="1">卖出</option>
+                                <option selected value="B">B - 买入</option>
+                                <option value="S">S - 卖出</option>
                             </select>
                             <input type="text" readonly v-else
                                    value="请先选择金融产品"
@@ -827,7 +825,7 @@ const units = ref<string[]>([])
                             <td data-th="交易板块"
                                 class="before:w-24 before:inline-block before:font-medium before:text-slate-700 before:content-[attr(data-th)':'] sm:before:content-none flex items-center sm:table-cell h-12 px-2 text-sm transition duration-300 sm:border-t sm:border-l first:border-l-0 border-slate-200 stroke-slate-500 text-slate-500 ">
                                 <span :class="defaultChipStyle(item.position.market)"
-                                      v-text="DEFAULT_BRANDS[item.position.market]" />
+                                      v-text="DEFAULT_BRANDS[item.position.market]"/>
                             </td>
                             <td data-th="证券昨日余额"
                                 class="before:w-24 before:inline-block before:font-medium before:text-slate-700 before:content-[attr(data-th)':'] sm:before:content-none flex items-center sm:table-cell h-12 px-2 text-sm transition duration-300 sm:border-t sm:border-l first:border-l-0 border-slate-200 stroke-slate-500 text-slate-500 ">
@@ -836,8 +834,8 @@ const units = ref<string[]>([])
                             <td data-th="股份余额"
                                 class="before:w-24 before:inline-block before:font-medium before:text-slate-700 before:content-[attr(data-th)':'] sm:before:content-none flex items-center sm:table-cell h-12 px-2 text-sm transition duration-300 sm:border-t sm:border-l first:border-l-0 border-slate-200 stroke-slate-500 text-slate-500 ">
                                 {{
-		                            (item.marketInfo.currentPrice *
-			                            item.marketInfo.availableQuantity).toFixed(4)
+																(item.marketInfo.currentPrice *
+																	item.marketInfo.availableQuantity).toFixed(4)
                                 }}
                             </td>
                             <td data-th="股份冻结数量"
@@ -945,7 +943,7 @@ const units = ref<string[]>([])
                             <td data-th="交易板块"
                                 class="before:w-24 before:inline-block before:font-medium before:text-slate-700 before:content-[attr(data-th)':'] sm:before:content-none flex items-center sm:table-cell h-12 px-2 text-sm transition duration-300 sm:border-t sm:border-l first:border-l-0 border-slate-200 stroke-slate-500 text-slate-500 ">
                                 <span
-                              v-text="`市场信息无法显示`" />
+                                        v-text="`市场信息无法显示`"/>
                             </td>
                             <td data-th="交易账户"
                                 class="before:w-24 before:inline-block before:font-medium before:text-slate-700 before:content-[attr(data-th)':'] sm:before:content-none flex items-center sm:table-cell h-12 px-2 text-sm transition duration-300 sm:border-t sm:border-l first:border-l-0 border-slate-200 stroke-slate-500 text-slate-500 ">
@@ -1165,10 +1163,12 @@ const units = ref<string[]>([])
         disabled:cursor-not-allowed disabled:border-rose-300
         disabled:bg-rose-300 disabled:shadow-none;
     }
-    th{
+
+    th {
         @apply text-center
     }
-    td{
+
+    td {
         @apply text-center
     }
 }
