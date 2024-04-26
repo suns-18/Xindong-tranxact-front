@@ -779,7 +779,7 @@ const okDealCheck = () => {
 @tailwind components;
 @layer components {
     .section-item-box {
-        @apply flex-none flex my-2 w-80 gap-2 items-center mx-2 justify-between
+        @apply flex-none flex my-2 w-80 gap-2 items-center mx-2
     }
 
     .container-big {
@@ -867,8 +867,7 @@ const okDealCheck = () => {
     }
 
     .section-item-box {
-        @apply flex-none flex my-2 w-fit
-        gap-2 items-center mx-2 justify-items-center align-middle
+        @apply flex-none flex my-2 w-80 gap-2 items-center mx-2
     }
 
     .container-big {
