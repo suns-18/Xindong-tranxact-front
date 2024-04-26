@@ -36,7 +36,7 @@ const menuItems: MenuItem[] = [
 <template>
     <div class="w-full">
         <section class="w-full mt-4" aria-multiselectable="false">
-            <ul class="flex flex-row flex-wrap gap-4 items-center border-b border-slate-200" role="tablist">
+            <ul class="flex flex-row flex-wrap gap-2 items-center border-b border-slate-200" role="tablist">
                 <li class="flex-1" role="presentation" v-for="(item,index) in menuItems">
                     <router-link
                             :class="currentPath == item.path?

@@ -24,9 +24,8 @@ const marketSelection = computed(
     () => customerStore.getMarketSelection)
 
 const getGenId = async () => {
-    let resp = await getGeneratedPrimeAccountId()
-    if (!resp.data) return
-    customerStore.getPrimeAccount.id = resp.data['data']
+    customerStore.getPrimeAccount.id =
+        customerStore.getCustomer.id
 }
 
 initPage()
@@ -35,7 +34,7 @@ initPage()
 <template>
     <div class="w-full">
         <div id="notification">
-        
+
         </div>
         <div id="section-1" class="w-full">
             <div class="section-title">
@@ -181,9 +180,9 @@ initPage()
                     <select class="select select-bordered w-56"
                             v-model="customerStore.getBankInfo.bankName">
                         <option
-                          v-for="(key, value) in BANK_LIST"
-                          :value="key"
-                          v-text="value + ` - `+ key"
+                                v-for="(key, value) in BANK_LIST"
+                                :value="key"
+                                v-text="value + ` - `+ key"
                         />
                     </select>
                 </div>
