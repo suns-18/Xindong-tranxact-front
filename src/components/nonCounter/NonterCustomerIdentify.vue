@@ -6,12 +6,11 @@ import axios from "@/ts/axios.ts";
 import {defaultChipStyle} from "@/ts/chip-status.ts";
 import {FollowAccount} from "@/ts/model/follow-account.ts";
 import {Position} from "@/ts/model/position.ts";
-import {MarketInfo} from "@/ts/model/market.ts";
+import {DEFAULT_BRANDS, MarketInfo} from "@/ts/model/market.ts";
 import {CommissionRecord, CommissionRequest} from "@/ts/model/commission.ts";
 
 const showAlert = ref(false)
 const customerId = ref("")
-
 const readFromReader = () => {
     customerId.value = "31355654"
 }
@@ -283,7 +282,8 @@ const commission = ref<CommissionRecord[]>([])
                             </td>
                             <td data-th="交易板块"
                                 class="before:w-24 before:inline-block before:font-medium before:text-slate-700 before:content-[attr(data-th)':'] sm:before:content-none flex items-center sm:table-cell h-12 px-2 text-sm transition duration-300 sm:border-t sm:border-l first:border-l-0 border-slate-200 stroke-slate-500 text-slate-500 ">
-                                {{ item.position.market }}
+                                <span :class="defaultChipStyle(item.position.market)"
+                                      v-text="DEFAULT_BRANDS[item.position.market]" />
                             </td>
                             <td data-th="证券昨日余额"
                                 class="before:w-24 before:inline-block before:font-medium before:text-slate-700 before:content-[attr(data-th)':'] sm:before:content-none flex items-center sm:table-cell h-12 px-2 text-sm transition duration-300 sm:border-t sm:border-l first:border-l-0 border-slate-200 stroke-slate-500 text-slate-500 ">
@@ -291,7 +291,10 @@ const commission = ref<CommissionRecord[]>([])
                             </td>
                             <td data-th="股份余额"
                                 class="before:w-24 before:inline-block before:font-medium before:text-slate-700 before:content-[attr(data-th)':'] sm:before:content-none flex items-center sm:table-cell h-12 px-2 text-sm transition duration-300 sm:border-t sm:border-l first:border-l-0 border-slate-200 stroke-slate-500 text-slate-500 ">
-                                {{ item.marketInfo.currentPrice * item.marketInfo.availableQuantity }}
+                                {{
+                                    (item.marketInfo.currentPrice *
+                                      item.marketInfo.availableQuantity).toFixed(4)
+                                }}
                             </td>
                             <td data-th="股份冻结数量"
                                 class="before:w-24 before:inline-block before:font-medium before:text-slate-700 before:content-[attr(data-th)':'] sm:before:content-none flex items-center sm:table-cell h-12 px-2 text-sm transition duration-300 sm:border-t sm:border-l first:border-l-0 border-slate-200 stroke-slate-500 text-slate-500 ">
@@ -305,7 +308,7 @@ const commission = ref<CommissionRecord[]>([])
                         </tbody>
                     </table>
                 </div>
-                <div class="container-big text-center" v-else>
+                <div class="container-big text-center py-16" v-else>
                     当前客户无持仓信息
                 </div>
             </div>
@@ -325,11 +328,13 @@ const commission = ref<CommissionRecord[]>([])
                         </li>
                     </ul>
                 </section>
-                <div class="container-big text-center" v-if="fullPosition && fullPosition.length">
-                    <table class="w-full md:w-fit mx-0 text-center border border-separate rounded border-slate-200"
+                <div class="container-big text-center" v-if="commission && commission.length">
+                    <table class="w-full md:w-fit mx-0 border
+                    text-center
+                    border-separate rounded border-slate-200"
                            cellspacing="0">
                         <tbody>
-                        <tr>
+                        <tr class="text-center">
                             <th scope="col"
                                 class="hidden h-12 px-2 text-sm font-medium border-l sm:table-cell first:border-l-0 stroke-slate-700 text-slate-700 bg-slate-100">
                                 合同序号
@@ -388,7 +393,7 @@ const commission = ref<CommissionRecord[]>([])
                             </th>
                         </tr>
                         <tr v-for="item in commission"
-                            class="block border-b sm:table-row last:border-b-0 border-slate-200 sm:border-none">
+                            class="block border-b sm:table-row text-center last:border-b-0 border-slate-200 sm:border-none">
                             <td data-th="合同序号"
                                 class="before:w-24 before:inline-block before:font-medium before:text-slate-700 before:content-[attr(data-th)':'] sm:before:content-none flex items-center sm:table-cell h-12 px-2 text-sm transition duration-300 sm:border-t sm:border-l first:border-l-0 border-slate-200 stroke-slate-500 text-slate-500 ">
                                 {{ item.orderInfo.id }}
@@ -427,7 +432,7 @@ const commission = ref<CommissionRecord[]>([])
                             </td>
                             <td data-th="委托金额"
                                 class="before:w-24 before:inline-block before:font-medium before:text-slate-700 before:content-[attr(data-th)':'] sm:before:content-none flex items-center sm:table-cell h-12 px-2 text-sm transition duration-300 sm:border-t sm:border-l first:border-l-0 border-slate-200 stroke-slate-500 text-slate-500 ">
-                                {{ item.orderBalance }}
+                                {{ item.orderBalance.toFixed(4) }}
                             </td>
                             <td data-th="冻结金额"
                                 class="before:w-24 before:inline-block before:font-medium before:text-slate-700 before:content-[attr(data-th)':'] sm:before:content-none flex items-center sm:table-cell h-12 px-2 text-sm transition duration-300 sm:border-t sm:border-l first:border-l-0 border-slate-200 stroke-slate-500 text-slate-500 ">
@@ -439,18 +444,14 @@ const commission = ref<CommissionRecord[]>([])
                             </td>
                             <td data-th="撤单详情"
                                 class="before:w-24 before:inline-block before:font-medium before:text-slate-700 before:content-[attr(data-th)':'] sm:before:content-none flex items-center sm:table-cell h-12 px-2 text-sm transition duration-300 sm:border-t sm:border-l first:border-l-0 border-slate-200 stroke-slate-500 text-slate-500 ">
-                                <span :class="item.orderInfo.isWithdraw?`chip-yellow`:`chip-green`">
-                                    {{ item.orderInfo.isWithdraw ? `是` : `否` }}
-                                </span>
-                                <span>
-                                  {{ item.orderInfo.isWithdraw ? item.orderInfo.withdrawAmount : "" }}
+                                <span :class="item.orderInfo.isWithdraw?`chip-orange`:`chip-green`">
+                                    {{ item.orderInfo.isWithdraw ? `￥${item.orderInfo.withdrawAmount}` : `否` }}
                                 </span>
                             </td>
                         </tr>
                         </tbody>
-                    </table>
-                </div>
-                <div class="container-big text-center" v-else>
+                    </table></div>
+                <div class="container-big text-center py-16" v-else>
                     当前客户无委托记录
                 </div>
             </div>

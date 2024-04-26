@@ -59,6 +59,12 @@ const routes = [
                     meta: {
                         title: "委托撤单 - 信东XAct证券业务综合服务平台"
                     }
+                },{
+                    path: '/nonCounter/dealCheck',
+                    component: () => import('../pages/nonCounter/DealCheck.vue'),
+                    meta: {
+                        title: "成交确认 - 信东XAct证券业务综合服务平台"
+                    }
                 },
                 //404 Handler
                 {

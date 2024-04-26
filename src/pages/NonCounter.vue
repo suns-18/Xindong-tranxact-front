@@ -22,6 +22,7 @@ interface MenuItem {
 const menuItems: MenuItem[] = [
     {title: "普通交易", path: "/nonCounter/transactCommission", icon: "", desc: "进行证券交易"},
     {title: "委托撤单", path: "/nonCounter/withdraw", icon: "", desc: "进行证券交易"},
+    {title: "成交确认", path: "/nonCounter/dealCheck", icon: "", desc: "进行证券交易"},
     {title: "运营业务", path: "/nonCounter/1", icon: "", desc: "进行运营业务"},
     {title: "统一账户", path: "/nonCounter/2", icon: "", desc: "进行统一账户管理"},
     {title: "账户业务", path: "/nonCounter/3", icon: "", desc: "进行账户业务"},

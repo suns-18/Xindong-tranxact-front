@@ -428,11 +428,11 @@ const units = ref<string[]>([])
                                 交易账户
                             </label>
                             <select class="select select-bordered select-sm w-48 z-10"
-                                    v-if="commissionRequest"
+                                    v-if="commissionRequest && stock"
                                     v-model="commissionRequest.orderInfo.followAccountId"
                             >
                                 <option v-for="(item, index) in followAccounts"
-                                        :selected="index" :value="index">
+                                        :selected="index" :value="item.id">
                                     {{ DEFAULT_BRANDS[item.market] }} - {{ item.id }}
                                 </option>
                             </select>
@@ -479,7 +479,7 @@ const units = ref<string[]>([])
                             <label class="mr-4">
                                 委托价格
                             </label>
-                            <InputNumber v-if="commissionRequest"
+                            <InputNumber v-if="commissionRequest && stock"
                                          showButtons buttonLayout="horizontal"
                                          :step="0.01"
                                          v-model="commissionRequest.orderInfo.orderPrice"
@@ -500,7 +500,7 @@ const units = ref<string[]>([])
                                 委托数量
                             </label>
                             <InputNumber
-                                    v-if="commissionRequest"
+                                    v-if="commissionRequest && stock"
                                     class="pv-input-box"
                                     input-class="w-28"
                                     showButtons
@@ -568,7 +568,7 @@ const units = ref<string[]>([])
                             <label class="flex-col my-2 mx-2 w-fit">
                                 交易单元
                             </label>
-                            <select v-if="commissionRequest"
+                            <select v-if="commissionRequest && stock"
                                     class="select select-bordered select-sm w-48"
                                     v-model="commissionRequest.orderInfo.unit"
                             >
@@ -826,7 +826,8 @@ const units = ref<string[]>([])
                             </td>
                             <td data-th="交易板块"
                                 class="before:w-24 before:inline-block before:font-medium before:text-slate-700 before:content-[attr(data-th)':'] sm:before:content-none flex items-center sm:table-cell h-12 px-2 text-sm transition duration-300 sm:border-t sm:border-l first:border-l-0 border-slate-200 stroke-slate-500 text-slate-500 ">
-                                {{ item.position.market }}
+                                <span :class="defaultChipStyle(item.position.market)"
+                                      v-text="DEFAULT_BRANDS[item.position.market]" />
                             </td>
                             <td data-th="证券昨日余额"
                                 class="before:w-24 before:inline-block before:font-medium before:text-slate-700 before:content-[attr(data-th)':'] sm:before:content-none flex items-center sm:table-cell h-12 px-2 text-sm transition duration-300 sm:border-t sm:border-l first:border-l-0 border-slate-200 stroke-slate-500 text-slate-500 ">
@@ -834,7 +835,10 @@ const units = ref<string[]>([])
                             </td>
                             <td data-th="股份余额"
                                 class="before:w-24 before:inline-block before:font-medium before:text-slate-700 before:content-[attr(data-th)':'] sm:before:content-none flex items-center sm:table-cell h-12 px-2 text-sm transition duration-300 sm:border-t sm:border-l first:border-l-0 border-slate-200 stroke-slate-500 text-slate-500 ">
-                                {{ item.marketInfo.currentPrice * item.marketInfo.availableQuantity }}
+                                {{
+		                            (item.marketInfo.currentPrice *
+			                            item.marketInfo.availableQuantity).toFixed(4)
+                                }}
                             </td>
                             <td data-th="股份冻结数量"
                                 class="before:w-24 before:inline-block before:font-medium before:text-slate-700 before:content-[attr(data-th)':'] sm:before:content-none flex items-center sm:table-cell h-12 px-2 text-sm transition duration-300 sm:border-t sm:border-l first:border-l-0 border-slate-200 stroke-slate-500 text-slate-500 ">
@@ -868,7 +872,7 @@ const units = ref<string[]>([])
                         </li>
                     </ul>
                 </section>
-                <div class="container-big text-center" v-if="fullPosition && fullPosition.length">
+                <div class="container-big text-center" v-if="commissionRecord && commissionRecord.length">
                     <table class="w-full md:w-fit mx-0 border
                     text-center
                     border-separate rounded border-slate-200"
@@ -940,7 +944,8 @@ const units = ref<string[]>([])
                             </td>
                             <td data-th="交易板块"
                                 class="before:w-24 before:inline-block before:font-medium before:text-slate-700 before:content-[attr(data-th)':'] sm:before:content-none flex items-center sm:table-cell h-12 px-2 text-sm transition duration-300 sm:border-t sm:border-l first:border-l-0 border-slate-200 stroke-slate-500 text-slate-500 ">
-                                {{ item.orderInfo.stockId }}
+                                <span
+                              v-text="`市场信息无法显示`" />
                             </td>
                             <td data-th="交易账户"
                                 class="before:w-24 before:inline-block before:font-medium before:text-slate-700 before:content-[attr(data-th)':'] sm:before:content-none flex items-center sm:table-cell h-12 px-2 text-sm transition duration-300 sm:border-t sm:border-l first:border-l-0 border-slate-200 stroke-slate-500 text-slate-500 ">
@@ -972,7 +977,7 @@ const units = ref<string[]>([])
                             </td>
                             <td data-th="委托金额"
                                 class="before:w-24 before:inline-block before:font-medium before:text-slate-700 before:content-[attr(data-th)':'] sm:before:content-none flex items-center sm:table-cell h-12 px-2 text-sm transition duration-300 sm:border-t sm:border-l first:border-l-0 border-slate-200 stroke-slate-500 text-slate-500 ">
-                                {{ item.orderBalance }}
+                                {{ item.orderBalance.toFixed(4) }}
                             </td>
                             <td data-th="冻结金额"
                                 class="before:w-24 before:inline-block before:font-medium before:text-slate-700 before:content-[attr(data-th)':'] sm:before:content-none flex items-center sm:table-cell h-12 px-2 text-sm transition duration-300 sm:border-t sm:border-l first:border-l-0 border-slate-200 stroke-slate-500 text-slate-500 ">
@@ -984,18 +989,15 @@ const units = ref<string[]>([])
                             </td>
                             <td data-th="撤单详情"
                                 class="before:w-24 before:inline-block before:font-medium before:text-slate-700 before:content-[attr(data-th)':'] sm:before:content-none flex items-center sm:table-cell h-12 px-2 text-sm transition duration-300 sm:border-t sm:border-l first:border-l-0 border-slate-200 stroke-slate-500 text-slate-500 ">
-                                <span :class="item.orderInfo.isWithdraw?`chip-yellow`:`chip-green`">
-                                    {{ item.orderInfo.isWithdraw ? `是` : `否` }}
-                                </span>
-                                <span>
-                                  {{ item.orderInfo.isWithdraw ? item.orderInfo.withdrawAmount : "" }}
+                                <span :class="item.orderInfo.isWithdraw?`chip-orange`:`chip-green`">
+                                    {{ item.orderInfo.isWithdraw ? `￥${item.orderInfo.withdrawAmount}` : `否` }}
                                 </span>
                             </td>
                         </tr>
                         </tbody>
                     </table>
                 </div>
-                <div class="container-big text-center" v-else>
+                <div class="container-big text-center py-16" v-else>
                     当前客户无委托记录
                 </div>
             </div>

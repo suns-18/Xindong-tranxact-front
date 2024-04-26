@@ -28,7 +28,10 @@ const customerStore = useCustomerStore(pinia)
 const currentRoutine = computed(() => customerStore.getCurrentRoutine)
 
 const routineBack = () => {
-    if (currentRoutine.value == 1) return
+    if (currentRoutine.value == 1) {
+        customerStore.initialize()
+        return
+    }
 
     customerStore.routineBack()
     window.scrollTo({

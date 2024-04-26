@@ -5,7 +5,9 @@ import axios from "@/ts/axios.ts";
 import {defaultChipStyle} from "@/ts/chip-status.ts";
 import {CommissionRecord, CommissionRequest} from "@/ts/model/commission.ts";
 import router from "@/ts/router.ts";
-import {toTop} from "@/ts/window-api.ts";
+import {formatDateTime, toTop} from "@/ts/window-api.ts";
+import {Transaction} from "@/ts/model/transaction.ts";
+import {Stock} from "@/ts/model/stock.ts";
 
 const showAlert = ref(false)
 const customerId = ref("")
@@ -27,25 +29,33 @@ const searchCustomers = async () => {
     showAlert.value = false
     customer.value = resp.data['data']
 
-    await getCommissionList()
+    await getList()
 }
 
-const getCommissionList = async () => {
+const getList = async () => {
     let url = ""
     switch (currentTab.value) {
         case 0:
             url = `/orderInfo/getByPrimeAccountIdToDeal?primeAccountId=${customer.value.id}`
             break
         case 1:
-            url = `/orderInfo/getByPrimeAccountIdWithdraw?primeAccountId=${customer.value.id}`
+            url = `/transaction/getByPrimeAccountId?primeAccountId=${customer.value.id}`
     }
     let resp = await axios.get(url)
     if (!resp.data) return
-    commissionRecord.value = resp.data["data"]
+
+    switch (currentTab.value) {
+        case 0:
+            commissionRecord.value = resp.data["data"]
+            break
+        case 1:
+            transactions.value = resp.data["data"]
+    }
+
 }
 const switchToTab = (index: number) => {
     currentTab.value = index
-    getCommissionList()
+    getList()
 }
 const customer = ref<Customer>()
 const COLOR_PALETTE = ['emerald', 'amber', 'sky', 'rose']
@@ -55,24 +65,47 @@ const resetCustomerSearchResult = () => {
     commissionRecord.value.length = 0
     currentTab.value = 0
 }
+const resetInput = () => {
+    step.value = 1
+    transactRequest.value = {
+        price: 0, amount: 0, orderInfo: {}
+    }
+}
+
+
 const commissionRecord = ref<CommissionRecord[]>([])
+const transactions = ref<Transaction[]>([])
 
 const showBeforeSubmit = ref(false)
 const showSuccessSubmit = ref(false)
-const currentItem = ref<CommissionRecord>()
-const doWithdraw = (item: CommissionRecord) => {
-    showBeforeSubmit.value = true
-    currentItem.value = item
+const goDealInput = async (item: CommissionRecord) => {
+    transactRequest.value.orderInfo = item.orderInfo
+    step.value = 2
+
+    let resp = await axios.get(`/stock/getById?id=${item.orderInfo.stockId}`)
+    if (!resp.data) return
+    relStock.value = resp.data.data
 }
-const submitWithdraw = async () => {
+
+interface TransactionRequest {
+    orderInfo: {},
+    price: number,
+    amount: number
+}
+
+const transactRequest = ref<TransactionRequest>({
+    amount: 0,
+    orderInfo: {},
+    price: 0
+})
+const submitDeal = async () => {
     showBeforeSubmit.value = false
-    let commissionRequest: CommissionRequest
-        = {
-        customerId: customer.value.id,
-        orderInfo: currentItem.value.orderInfo
-    }
+
     try {
-        let resp = await axios.post("/orderInfo/withdrawOrder", commissionRequest)
+        let resp = await axios.post(
+            "/transaction/doTransaction",
+            transactRequest.value
+        )
         if (!resp.data) {
             errorMsg.value = "数据库连接错误"
             errorMsgDisplay.value = true
@@ -102,11 +135,20 @@ const errorMsg = ref("数据库连接错误")
 const errorMsgDisplay = ref(false)
 const closeSuccessDialog = async () => {
     showSuccessSubmit.value = false
-    currentItem.value = undefined
+    transactRequest.value = {
+        amount: 0, orderInfo: {}, price: 0
+    }
+    step.value = 1
     await switchToTab(1)
 }
 const currentTab = ref(0)
-const tabMenus = ["可撤销", "已撤销"]
+const tabMenus = ["待确认", "已确认"]
+const relStock = ref<Stock>()
+const step = ref(1)
+
+const okDealCheck = () => {
+    showBeforeSubmit.value = true
+}
 </script>
 
 <template>
@@ -117,7 +159,7 @@ const tabMenus = ["可撤销", "已撤销"]
                  :life="4000">{{ errorMsg }}
         </Message>
     </div>
-    <div class="w-full">
+    <div v-if="step==1" id="s1" class="w-full">
         <div class="section-title">
             客户识别
         </div>
@@ -259,10 +301,9 @@ const tabMenus = ["可撤销", "已撤销"]
                     </li>
                 </ul>
             </section>
-            <div class="container-big m-0" v-for="(tab,index) in tabMenus">
-                <span v-if="index == currentTab">
-                   <div class="container-big text-center"
-                        v-if="commissionRecord && commissionRecord.length">
+            <div class="container-big m-0" v-if="0 == currentTab">
+                <div class="container-big text-center"
+                     v-if="commissionRecord && commissionRecord.length">
                     <table class="w-full md:w-fit mx-0 border
                     text-center
                     border-separate rounded border-slate-200"
@@ -380,22 +421,278 @@ const tabMenus = ["可撤销", "已撤销"]
                             <td data-th="操作" v-if="currentTab==0"
                                 class="before:w-24 before:inline-block before:font-medium before:text-slate-700 before:content-[attr(data-th)':'] sm:before:content-none flex items-center sm:table-cell h-12 px-2 text-sm transition duration-300 sm:border-t sm:border-l first:border-l-0 border-slate-200 stroke-slate-500 text-slate-500 ">
                                 <button
-                                        @click="doWithdraw(item)"
+                                        @click="goDealInput(item)"
                                         class="inline-flex items-center justify-center
-                                h-8 gap-2 px-4 text-xs font-medium tracking-wide text-white
-                                transition duration-300 rounded shadow-md focus-visible:outline-none justify-self-center whitespace-nowrap bg-sky-500 shadow-sky-200 hover:bg-sky-600 hover:shadow-sm hover:shadow-sky-200
-                                focus:bg-sky-700 focus:shadow-sm focus:shadow-sky-200 disabled:cursor-not-allowed disabled:border-sky-300 disabled:bg-sky-300 disabled:shadow-none">
-                                    <span>撤单</span>
+                                h-8 gap-2 px-4 text-sm font-medium tracking-wide text-white
+                                transition duration-300 rounded shadow-md focus-visible:outline-none justify-self-center whitespace-nowrap bg-rose-500 shadow-rose-200 hover:bg-rose-600 hover:shadow-sm hover:shadow-rose-200
+                                focus:bg-rose-700 focus:shadow-sm focus:shadow-rose-200 disabled:cursor-not-allowed disabled:border-rose-300 disabled:bg-rose-300 disabled:shadow-none">
+                                    <span>成交</span>
                                 </button>
                             </td>
                         </tr>
                         </tbody>
                     </table>
                 </div>
-                    <div class="container-big text-center pt-8" v-else>
-                        当前客户无{{ tab }}记录
+                <div class="container-big text-center pt-8" v-else>
+                    当前客户无{{ tabMenus[0] }}记录
+                </div>
+            </div>
+            <div class="container-big m-0" v-if="1 == currentTab">
+                <div class="container-big text-center"
+                     v-if="transactions && transactions.length">
+                    <table class="w-full md:w-fit mx-0 border
+                    text-center
+                    border-separate rounded border-slate-200"
+                           cellspacing="0">
+                        <tbody>
+                        <tr class="text-center">
+                            <th scope="col"
+                                class="hidden h-12 px-2 text-sm font-medium border-l sm:table-cell first:border-l-0 stroke-slate-700 text-slate-700 bg-slate-100">
+                                合同序号
+                            </th>
+
+                            <th scope="col"
+                                class="hidden h-12 px-2 text-sm font-medium border-l sm:table-cell first:border-l-0 stroke-slate-700 text-slate-700 bg-slate-100">
+                                交易账户
+                            </th>
+                            <th scope="col"
+                                class="hidden h-12 px-2 text-sm font-medium border-l sm:table-cell first:border-l-0 stroke-slate-700 text-slate-700 bg-slate-100">
+                                证券代码
+                            </th>
+                            <th scope="col"
+                                class="hidden h-12 px-2 text-sm font-medium border-l sm:table-cell first:border-l-0 stroke-slate-700 text-slate-700 bg-slate-100">
+                                交易时间
+                            </th>
+                            <th scope="col"
+                                class="hidden h-12 px-2 text-sm font-medium border-l sm:table-cell first:border-l-0 stroke-slate-700 text-slate-700 bg-slate-100">
+                                证券业务
+                            </th>
+                            <th scope="col"
+                                class="hidden h-12 px-2 text-sm font-medium border-l sm:table-cell first:border-l-0 stroke-slate-700 text-slate-700 bg-slate-100">
+                                委托数量
+                            </th>
+                            <th scope="col"
+                                class="hidden h-12 px-2 text-sm font-medium border-l sm:table-cell first:border-l-0 stroke-slate-700 text-slate-700 bg-slate-100">
+                                委托价格
+                            </th>
+                            <th scope="col"
+                                class="hidden h-12 px-2 text-sm font-medium border-l sm:table-cell first:border-l-0 stroke-slate-700 text-slate-700 bg-slate-100">
+                                委托金额
+                            </th>
+                            <th scope="col"
+                                class="hidden h-12 px-2 text-sm font-medium border-l sm:table-cell first:border-l-0 stroke-slate-700 text-slate-700 bg-slate-100">
+                                成交数量
+                            </th>
+                            <th scope="col"
+                                class="hidden h-12 px-2 text-sm font-medium border-l sm:table-cell first:border-l-0 stroke-slate-700 text-slate-700 bg-slate-100">
+                                成交价格
+                            </th>
+                            <th scope="col"
+                                class="hidden h-12 px-2 text-sm font-medium border-l sm:table-cell first:border-l-0 stroke-slate-700 text-slate-700 bg-slate-100">
+                                成交金额
+                            </th>
+                        </tr>
+                        <tr v-for="item in transactions"
+                            class="block border-b sm:table-row text-center last:border-b-0 border-slate-200 sm:border-none">
+                            <td data-th="合同序号"
+                                class="before:w-24 before:inline-block before:font-medium before:text-slate-700 before:content-[attr(data-th)':'] sm:before:content-none flex items-center sm:table-cell h-12 px-2 text-sm transition duration-300 sm:border-t sm:border-l first:border-l-0 border-slate-200 stroke-slate-500 text-slate-500 ">
+                                {{ item.transaction.orderId }}
+                            </td>
+                            <td data-th="交易账户"
+                                class="before:w-24 before:inline-block before:font-medium before:text-slate-700 before:content-[attr(data-th)':'] sm:before:content-none flex items-center sm:table-cell h-12 px-2 text-sm transition duration-300 sm:border-t sm:border-l first:border-l-0 border-slate-200 stroke-slate-500 text-slate-500 ">
+                                {{ item.followAccountId }}
+                            </td>
+                            <td data-th="证券代码"
+                                class="before:w-24 before:inline-block before:font-medium before:text-slate-700 before:content-[attr(data-th)':'] sm:before:content-none flex items-center sm:table-cell h-12 px-2 text-sm transition duration-300 sm:border-t sm:border-l first:border-l-0 border-slate-200 stroke-slate-500 text-slate-500 ">
+                                {{ item.transaction.stockId }}
+                            </td>
+                            <td data-th="交易时间"
+                                class="before:w-24 before:inline-block before:font-medium before:text-slate-700 before:content-[attr(data-th)':'] sm:before:content-none flex items-center sm:table-cell h-12 px-2 text-sm transition duration-300 sm:border-t sm:border-l first:border-l-0 border-slate-200 stroke-slate-500 text-slate-500 ">
+                                {{ item.transaction.transactTime }}
+                            </td>
+                            <td data-th="成交数量"
+                                class="before:w-24 before:inline-block before:font-medium before:text-slate-700 before:content-[attr(data-th)':'] sm:before:content-none flex items-center sm:table-cell h-12 px-2 text-sm transition duration-300 sm:border-t sm:border-l first:border-l-0 border-slate-200 stroke-slate-500 text-slate-500 ">
+                                {{ item.transaction.amount }}
+                            </td>
+                            <td data-th="成交价格"
+                                class="before:w-24 before:inline-block before:font-medium before:text-slate-700 before:content-[attr(data-th)':'] sm:before:content-none flex items-center sm:table-cell h-12 px-2 text-sm transition duration-300 sm:border-t sm:border-l first:border-l-0 border-slate-200 stroke-slate-500 text-slate-500 ">
+                                {{ item.transaction.price }}
+                            </td>
+                            <td data-th="成交金额"
+                                class="before:w-24 before:inline-block before:font-medium before:text-slate-700 before:content-[attr(data-th)':'] sm:before:content-none flex items-center sm:table-cell h-12 px-2 text-sm transition duration-300 sm:border-t sm:border-l first:border-l-0 border-slate-200 stroke-slate-500 text-slate-500 ">
+                                {{ item.transactionBalance }}
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="container-big text-center pt-8" v-else>
+                    当前客户无{{ tabMenus[1] }}记录
+                </div>
+            </div>
+        </div>
+    </div>
+    <div v-if="step==2" id="s2" class="w-full">
+        <div class="lg:flex lg:gap-4">
+            <div id="order-detail" class="basis-1 flex-1">
+                <div class="section-title">
+                    委托信息
+                </div>
+                <div class="w-full m-4">
+                    <div class="px-4 sm:px-0">
+                        <h3 class="text-base font-semibold leading-7 text-gray-900">
+                            {{ relStock.stockName }}
+                        </h3>
+                        <p class="mt-1 max-w-2xl text-sm leading-6 text-gray-500">
+                            {{ transactRequest.orderInfo.stockId }}
+                        </p>
                     </div>
-                </span>
+                    <div class="mt-6 border-t border-gray-100">
+                        <dl class="divide-y divide-gray-100">
+                            <div class="kv-row">
+                                <dt class="text-sm font-medium leading-6 text-gray-900">交易单号</dt>
+                                <dd class="kv-v-panel">
+                                    {{ transactRequest.orderInfo.id }}
+                                </dd>
+                            </div>
+                            <div class="kv-row">
+                                <dt class="text-sm font-medium leading-6 text-gray-900">交易账户</dt>
+                                <dd class="kv-v-panel">
+                                    {{ transactRequest.orderInfo.followAccountId }}
+                                </dd>
+                            </div>
+                            <div class="kv-row">
+                                <dt class="text-sm font-medium leading-6 text-gray-900">交易类型</dt>
+                                <dd class="kv-v-panel">
+                                    {{ transactRequest.orderInfo.trdId }}
+                                </dd>
+                            </div>
+                            <div class="kv-row">
+                                <dt class="text-sm font-medium leading-6 text-gray-900">委托数量</dt>
+                                <dd class="kv-v-panel">
+                                    <span class="text-rose-500">
+                                        {{ transactRequest.orderInfo.orderAmount }}
+                                    </span> 笔
+                                </dd>
+                            </div>
+                            <div class="kv-row">
+                                <dt class="text-sm font-medium leading-6 text-gray-900">
+                                    委托价格
+                                </dt>
+                                <dd class="kv-v-panel">
+                                    ￥<span class="text-rose-500">
+                                        {{ transactRequest.orderInfo.orderPrice }}
+                                    </span>
+                                </dd>
+                            </div>
+                            <div class="kv-row">
+                                <dt class="text-sm font-medium leading-6 text-gray-900">
+                                    委托金额
+                                </dt>
+                                <dd class="kv-v-panel">
+                                    ￥<span class="text-rose-500">
+                                        {{
+																		(transactRequest.orderInfo.orderPrice *
+																			transactRequest.orderInfo.orderAmount).toFixed(4)
+                                    }}
+                                    </span>
+                                </dd>
+                            </div>
+                            <div class="kv-row">
+                                <dt class="text-sm font-medium leading-6 text-gray-900">下单时间</dt>
+                                <dd class="kv-v-panel">
+                                    {{ formatDateTime(transactRequest.orderInfo.orderTime) }}
+                                </dd>
+                            </div>
+                        </dl>
+                    </div>
+                </div>
+            </div>
+            <div id="transact-detail" class="basis-1 flex-1">
+                <div class="section-title">
+                    输入成交信息
+                </div>
+                <div class="w-full m-4">
+                    <div class="mt-6 border-t border-gray-100">
+                        <dl class="divide-y divide-gray-100">
+                            <div class="kv-row">
+                                <dt class="text-sm font-medium items-center leading-6 text-gray-900">成交价格</dt>
+                                <dd class="kv-v-panel">
+                                    <InputNumber
+                                            class="pv-input-box text-sm"
+                                            input-class="w-28 h-12 text-sm"
+                                            showButtons
+                                            buttonLayout="horizontal"
+                                            :step="0.01"
+                                            v-model="transactRequest.price"
+                                            incrementButtonIcon="pi pi-plus text-black"
+                                            decrementButtonIcon="pi pi-minus text-black"
+                                    />
+                                </dd>
+                            </div>
+                            <div class="kv-row">
+                                <dt class="text-sm font-medium leading-6 text-gray-900">成交数量</dt>
+                                <dd class="kv-v-panel">
+                                    <InputNumber
+                                            class="pv-input-box"
+                                            input-class="w-28"
+                                            showButtons
+                                            buttonLayout="horizontal"
+                                            :step="100"
+                                            v-model="transactRequest.amount"
+                                            incrementButtonIcon="pi pi-plus text-black"
+                                            decrementButtonIcon="pi pi-minus text-black"
+                                    />
+                                </dd>
+                            </div>
+                            <div class="kv-row">
+                                <dt class="text-sm font-medium leading-6 text-gray-900">成交总价格</dt>
+                                <dd class="kv-v-panel">
+                                    <label
+                                            class="block text-lg font-medium
+                           w-fit text-center
+                           text-orange-500 dark:text-white">
+                                        ￥{{ (transactRequest.amount * transactRequest.price).toFixed(4) }}
+                                    </label>
+                                </dd>
+                            </div>
+                        </dl>
+                    </div>
+                </div>
+
+
+                <div class="md:mt-48 flex gap-4">
+                    <button class="inline-flex flex-1
+                            items-center justify-center
+                            h-12 gap-2 px-6 text-sm
+                            font-medium tracking-wide
+                            text-white transition duration-300
+                            rounded shadow-lg focus-visible:outline-none
+                            whitespace-nowrap bg-blue-500 shadow-blue-200
+                            hover:bg-blue-600 hover:shadow-md hover:shadow-blue-200
+                            focus:bg-blue-700 focus:shadow-md focus:shadow-blue-200
+                            disabled:cursor-not-allowed disabled:border-blue-300
+                            disabled:bg-blue-300 disabled:shadow-none"
+                            @click="okDealCheck"
+                    >
+                        <span>确定</span>
+                    </button>
+                    <button class="inline-flex flex-1 items-center justify-center
+                            h-12 gap-2 px-6 text-sm font-medium tracking-wide
+                            transition duration-300 border rounded shadow-lg
+                            focus-visible:outline-none whitespace-nowrap
+                            border-blue-500 text-blue-500 shadow-blue-200
+                            hover:border-blue-600 hover:text-blue-600
+                            focus:border-blue-700 focus:text-blue-700
+                            hover:shadow-md hover:shadow-blue-200
+                            focus:shadow-md focus:shadow-blue-200
+                            disabled:cursor-not-allowed disabled:border-blue-300
+                             disabled:text-blue-300 disabled:shadow-none"
+                            @click="resetInput"
+                    >
+                        <span>重新选择</span>
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -413,11 +710,10 @@ const tabMenus = ["可撤销", "已撤销"]
                 <div class="text-center text-6xl text-sky-400">
                     <span class="mdi mdi-help"></span>
                 </div>
-                <h3 class="flex-1 text-xl font-medium text-slate-700">确认撤销该委托？</h3>
+                <h3 class="flex-1 text-xl font-medium text-slate-700">确认该笔委托成交？</h3>
             </header>
             <!-- Modal body -->
-            <div id="content-5a" class="flex-1 overflow-auto text-red-600">
-                <p>单号：{{ currentItem.orderInfo.id }}</p>
+            <div id="content-5a" class="flex-1 overflow-auto text-center text-red-600">
                 <p>该操作不可撤回！</p>
             </div>
             <!-- Modal actions -->
@@ -427,7 +723,7 @@ const tabMenus = ["可撤销", "已撤销"]
                 transition duration-300 rounded whitespace-nowrap bg-blue-500 hover:bg-blue-600
                 focus:bg-blue-700 focus-visible:outline-none disabled:cursor-not-allowed
                 disabled:border-blue-300 disabled:bg-blue-300 disabled:shadow-none"
-                        @click="submitWithdraw"
+                        @click="submitDeal"
                 >
                     <span>确认</span>
                 </button>
@@ -483,7 +779,7 @@ const tabMenus = ["可撤销", "已撤销"]
 @tailwind components;
 @layer components {
     .section-item-box {
-        @apply flex-none flex my-2 w-80 gap-2 items-center mx-2
+        @apply flex-none flex my-2 w-80 gap-2 items-center mx-2 justify-between
     }
 
     .container-big {
@@ -568,6 +864,28 @@ const tabMenus = ["可撤销", "已撤销"]
 
     td {
         @apply text-center
+    }
+
+    .section-item-box {
+        @apply flex-none flex my-2 w-fit
+        gap-2 items-center mx-2 justify-items-center align-middle
+    }
+
+    .container-big {
+        @apply w-full mt-2 mx-2
+    }
+
+    .container-row {
+        @apply flex flex-row flex-wrap items-center md:w-full
+
+    }
+
+    .kv-row {
+        @apply px-2 py-3 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0
+    }
+
+    .kv-v-panel {
+        @apply mt-1 text-sm leading-6 text-gray-700 sm:col-span-2 sm:mt-0
     }
 }
 </style>
