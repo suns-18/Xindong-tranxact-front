@@ -71,7 +71,7 @@ const customers = ref<Customer[]>([])
             <div class="relative my-6 mx-6 w-full flex flex-row">
                 <div id="input" class="flex-1 w-fit">
                     <input type="text" v-model="customerId" placeholder="客户号码" data-content="number"
-                           class="relative w-full h-12 px-4 placeholder-transparent transition-all border-b outline-none focus-visible:outline-none peer border-slate-200 text-slate-500 autofill:bg-white invalid:border-pink-500 invalid:text-pink-500 focus:border-emerald-500 focus:outline-none invalid:focus:border-pink-500 disabled:cursor-not-allowed disabled:bg-slate-50 disabled:text-slate-400"/>
+                           class="relative w-full h-12 px-4 placeholder-transparent transition-all border-b outline-none focus-visible:outline-none peer border-slate-200 text-slate-500 autofill:bg-white invalid:border-pink-500 invalid:text-pink-500 focus:border-blue-500 focus:outline-none invalid:focus:border-pink-500 disabled:cursor-not-allowed disabled:bg-slate-50 disabled:text-slate-400"/>
                     <label for="id-l02"
                            class="cursor-text peer-focus:cursor-default hidden md:flex
                            peer-autofill:-top-2 absolute left-2 -top-2 z-[1]
@@ -81,10 +81,10 @@ const customers = ref<Customer[]>([])
                            before:transition-all peer-placeholder-shown:top-3
                            peer-placeholder-shown:text-base peer-required:after:text-pink-500
                            peer-required:after:content-['\00a0*'] peer-invalid:text-pink-500
-                           peer-focus:-top-2 peer-focus:text-xs peer-focus:text-emerald-500
+                           peer-focus:-top-2 peer-focus:text-xs peer-focus:text-blue-500
                            peer-invalid:peer-focus:text-pink-500 peer-disabled:cursor-not-allowed
                            peer-disabled:text-slate-400 peer-disabled:before:bg-transparent">
-                        请输入客户名称、客户代码、证件号码、主资金账号等信息
+                        请输入客户代码
                     </label>
                 </div>
                 <div class="md:flex-none flex-initial">
@@ -92,11 +92,11 @@ const customers = ref<Customer[]>([])
                     justify-center h-12 gap-2 px-6 text-sm mx-2
                     font-medium tracking-wide transition duration-300
                     rounded focus-visible:outline-none justify-self-center
-                    whitespace-nowrap bg-emerald-50 text-emerald-500
-                    hover:bg-emerald-100 hover:text-emerald-600
-                    focus:bg-emerald-200 focus:text-emerald-700
-                    disabled:cursor-not-allowed disabled:border-emerald-300 disabled:bg-emerald-100
-                    disabled:text-emerald-400 disabled:shadow-none"
+                    whitespace-nowrap bg-blue-50 text-blue-500
+                    hover:bg-blue-100 hover:text-blue-600
+                    focus:bg-blue-200 focus:text-blue-700
+                    disabled:cursor-not-allowed disabled:border-blue-300 disabled:bg-blue-100
+                    disabled:text-blue-400 disabled:shadow-none"
                             @click="readFromReader">
                         <span>从扫描仪读取</span>
                     </button>
@@ -105,7 +105,7 @@ const customers = ref<Customer[]>([])
                     <button
                             @click="searchCustomers"
                             class="inline-flex items-center justify-center
-                    h-12 gap-2 px-6 text-sm font-medium tracking-wide text-white transition duration-300 rounded focus-visible:outline-none whitespace-nowrap bg-emerald-500 hover:bg-emerald-600 focus:bg-emerald-700 disabled:cursor-not-allowed disabled:border-emerald-300 disabled:bg-emerald-300 disabled:shadow-none">
+                    h-12 gap-2 px-6 text-sm font-medium tracking-wide text-white transition duration-300 rounded focus-visible:outline-none whitespace-nowrap bg-blue-500 hover:bg-blue-600 focus:bg-blue-700 disabled:cursor-not-allowed disabled:border-blue-300 disabled:bg-blue-300 disabled:shadow-none">
                         <span>识别</span>
                     </button>
                 </div>
@@ -157,8 +157,8 @@ const customers = ref<Customer[]>([])
                     </td>
                     <td data-th="证件类型"
                         class="before:w-24 before:inline-block before:font-medium before:text-slate-700 before:content-[attr(data-th)':'] sm:before:content-none flex items-center sm:table-cell h-12 px-6 text-sm transition duration-300 sm:border-t sm:border-l first:border-l-0 border-slate-200 stroke-slate-500 text-slate-500 ">
-                        <span :class="defaultChipStyle(item.idType)">
-                            {{ ID_TYPE[item.idType] }}
+                        <span :class="defaultChipStyle(parseInt(item.idType))">
+                            {{ ID_TYPE[parseInt(item.idType)] }}
                         </span>
                     </td>
                     <td data-th="证件号码"

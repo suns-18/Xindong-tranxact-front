@@ -1,7 +1,7 @@
 export interface Customer {
     id: number
     customerName: string
-    idType: number
+    idType: string
     idNumber: string
     cuacctCls: number
     cuacctStatus: number

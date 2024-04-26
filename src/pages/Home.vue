@@ -11,7 +11,7 @@ interface MenuItem {
 
 const menuItems: MenuItem[] = [
     {title: "客户开户", path: "/accept/register", icon: "mdi mdi-account-plus", desc: "为新客户创建、登记账户"},
-    {title: "委托登记", path: "/nonCounter/wt", icon: "mdi mdi-table-arrow-up", desc: "为新客户创建、登记账户"},
+    {title: "委托登记", path: "/nonCounter/transactCommission", icon: "mdi mdi-table-arrow-up", desc: "为新客户创建、登记账户"},
     {title: "撤单申请", path: "/nonCounter/withdraw", icon: "mdi mdi-table-cancel", desc: "为新客户创建、登记账户"},
     {title: "成交确认", path: "/nonCounter/dealCheck", icon: "mdi mdi-table-check", desc: "为新客户创建、登记账户"},
 ]
@@ -86,11 +86,12 @@ initPage()
     </div>
 	<!-- End Chip notification with leading button -->
 	<!-- Component: Card with icon -->
-    <div class="text-center justify-center justify-items-center align-middle lg:h-[17rem]">
-        <!--  Image -->
-        <figure>
-            <img src="/home_banner.png" alt="HOME_BANNER" class="aspect-video w-full h-[17rem]"/>
-        </figure>
+    <div class="flex flex-row text-center items-center justify-center justify-items-center align-middle">
+        <div ></div>
+        <div>
+            <img src="/home-banner-1.jpg" alt="HOME_BANNER" class="aspect-video w-[60vw] h-[18rem]"/>
+        </div>
+        <div></div>
     </div>
     <div class="grid grid-cols-12">
         <router-link class="overflow-hidden text-center bg-white rounded

@@ -1,7 +1,7 @@
 import {defineStore} from "pinia";
 import pinia from "../pinia.ts";
 import {Customer} from "@/ts/model/customer.ts";
-import {DEFAULT_BRANDS, Market} from "@/ts/model/market.ts";
+import {DEFAULT_BRANDS, MarketSelection} from "@/ts/model/market.ts";
 import {Bank} from "@/ts/model/bank.ts";
 import {PrimeAccount} from "@/ts/model/prime-account.ts";
 
@@ -12,7 +12,7 @@ export const useCustomerStore
     state: () => {
         return {
             customer: <Customer>{},
-            marketSelection: <Market[]>[],
+            marketSelection: <MarketSelection[]>[],
             primeAccount:<PrimeAccount>{},
             bank: <Bank>{},
             currentRoutine: 1

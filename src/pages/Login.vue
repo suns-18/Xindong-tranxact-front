@@ -19,7 +19,7 @@ const doLogin = async () => {
             <!-- Body-->
             <div class="p-6">
                 <header class="mb-4 text-center">
-                    <h2 class="text-2xl font-bold text-blue-700 pb-2 select-none">XAct金融交易平台</h2>
+                    <h2 class="text-2xl font-bold text-blue-700 pb-2 select-none">XAct证券业务综合服务平台</h2>
                     <h3 class="text-xl font-medium text-slate-700  select-none">登陆</h3>
                 </header>
                 <div class="flex flex-col space-y-8">

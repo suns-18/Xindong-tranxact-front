@@ -52,35 +52,4 @@ const menuItems: MenuItem[] = [
 </template>
 
 <style scoped>
-@tailwind components;
-@layer {
-    .tab-button-current {
-        @apply
-        inline-flex items-center justify-center h-12 gap-2 px-6 text-sm
-        font-medium tracking-wide transition duration-300 rounded
-        focus-visible:outline-none whitespace-nowrap bg-blue-500
-        hover:bg-blue-600 focus:bg-blue-700 disabled:cursor-not-allowed disabled:bg-blue-300
-        w-full -mb-px
-        border-b-2 rounded-t
-        border-blue-500 hover:border-blue-600 focus:border-blue-700
-        hover:text-blue-600 focus:text-blue-700
-        disabled:border-slate-500 stroke-blue-500
-        hover:stroke-blue-600 focus:stroke-blue-700
-    }
-    .tab-button-others {
-        @apply
-        inline-flex items-center justify-center h-12 gap-2 px-6 text-sm
-        font-medium tracking-wide transition duration-300 rounded
-        focus-visible:outline-none whitespace-nowrap bg-blue-300
-        hover:bg-blue-600
-        focus:bg-blue-700
-        disabled:cursor-not-allowed disabled:bg-blue-300
-        w-full -mb-px
-        border-b-2 rounded-t
-        border-blue-500 hover:border-blue-600 focus:border-blue-700
-        focus:text-blue-700
-        disabled:border-slate-500 stroke-blue-500
-        hover:stroke-blue-600 focus:stroke-blue-700
-    }
-}
 </style>

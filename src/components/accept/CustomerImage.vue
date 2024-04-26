@@ -5,6 +5,7 @@ import pinia from "@/ts/pinia.ts";
 import {ref} from "vue";
 import {postCustomer} from "@/ts/request-promises.ts";
 import {useRouter} from "vue-router";
+import {toTop} from "@/ts/window-api.ts";
 
 const customerStore = useCustomerStore(pinia)
 
@@ -18,24 +19,26 @@ const showSubmitDialog = async () => {
 }
 const submitCustomer = async () => {
     showBeforeSubmit.value = false
-    let resp = await postCustomer()
-    if (!resp.data) {
+    try {
+        let resp = await postCustomer()
+        if (!resp.data) {
+            errorMsg.value = "数据库连接错误"
+            errorMsgDisplay.value = true
+            toTop()
+            return
+        }
+        if (resp.data['code'] == 500) {
+            errorMsg.value = resp.data['msg']
+            errorMsgDisplay.value = true
+            toTop()
+            return
+        }
+        showSuccessSubmit.value = true
+    } catch (e) {
         errorMsg.value = "数据库连接错误"
-        errorMsgDisplayTimer()
-        return
+        errorMsgDisplay.value = true
+        toTop()
     }
-    if (resp.data['code'] == 500) {
-        errorMsg.value = resp.data['msg']
-        errorMsgDisplayTimer()
-        return
-    }
-    showSuccessSubmit.value = true
-}
-const errorMsgDisplayTimer = () => {
-    let timer = setInterval(() => {
-        if (errorMsgDisplay.value == false) errorMsgDisplay.value = true
-    }, 5000)
-    clearInterval(timer)
 }
 const goHome = async () => {
     window.scroll({
@@ -51,17 +54,11 @@ const errorMsg = ref("数据库连接错误!")
 
 <template>
     <div id="notification" class="mb-4">
-        <div class="flex items-start w-full gap-4 px-4 py-3 text-lg
-        text-pink-500 border border-pink-100 rounded bg-pink-50"
-             v-if="errorMsgDisplay"
-             role="alert">
-            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24"
-                 stroke="currentColor" stroke-width="1.5" role="graphics-symbol" aria-labelledby="title-04 desc-04">
-                <path stroke-linecap="round" stroke-linejoin="round"
-                      d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-            </svg>
-            <p>{{ errorMsg }}</p>
-        </div>
+        <Message severity="error"
+                 v-if="errorMsgDisplay"
+                 sticky="sticky"
+                 :life="4000">{{ errorMsg }}
+        </Message>
     </div>
     <div class="lg:flex gap-4 mb-6">
         <div class="flex-1 basis-1/4">

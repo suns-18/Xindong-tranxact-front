@@ -8,3 +8,4 @@ pinia.use(piniaPluginPersist)
 export default pinia
 
 export * from './store/customer-store'
+export * from './store/stock-transact-store.ts'

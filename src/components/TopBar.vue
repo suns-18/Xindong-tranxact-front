@@ -10,7 +10,7 @@ import DropdownMenu from "@/components/DropdownMenu.vue";
             <DropdownMenu />
             <a class="bg-ghost lg:text-xl sm:text-xl md:text-xl text-lg
             text-center justify-items-center w-full hidden lg:flex
-      font-sans font-bold cursor-default select-none lg:px-16">信东XAct金融交易平台</a>
+      font-sans font-bold cursor-default select-none lg:px-16">信东XAct证券业务综合服务平台</a>
         </div>
         <div class="navbar-start flex md:hidden lg:hidden sm:hidden">
             <DropdownMenu />
@@ -18,7 +18,7 @@ import DropdownMenu from "@/components/DropdownMenu.vue";
         <div class="navbar-center flex sm:flex lg:hidden md:flex min-w-56">
             <a class="bg-ghost lg:text-xl sm:text-xl md:text-xl text-lg
             text-center justify-items-center w-full
-      font-sans font-bold cursor-default select-none lg:px-16">信东XAct金融交易平台</a>
+      font-sans font-bold cursor-default select-none lg:px-16">信东XAct证券业务综合服务平台</a>
         </div>
         <div class="navbar-center hidden">
             <ul class="menu menu-horizontal px-1 w-full text-base">
