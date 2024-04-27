@@ -47,7 +47,8 @@ const getGenId = async () => {
             </div>
             <div class="flex my-6 md:w-80 gap-2 justify-between">
                 <label class="flex items-center">
-                    客户代码<span class="text-red-600">*</span>
+                    <span>客户代码</span>
+                    <span class="text-red-600 text-3xl">*</span>
                 </label>
                 <input type="text" class="input input-bordered grow w-36" readonly
                        v-model="customerStore.getCustomer.id"

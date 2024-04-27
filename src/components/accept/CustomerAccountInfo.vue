@@ -80,8 +80,12 @@ initPage()
                             交易板块
                         </th>
                         <th scope="col"
-                            class="hidden h-12 px-6 text-sm md:text-base md:text-center font-medium border-l sm:table-cell first:border-l-0 stroke-slate-700 text-slate-700 bg-slate-100">
-                            是否开通
+                            class="hidden h-12 px-6 text-sm items-center md:flex flex-row
+                            md:text-base md:text-center font-medium border-l
+                            sm:table-cell first:border-l-0 stroke-slate-700
+                            text-slate-700 bg-slate-100">
+                            <div>是否开通</div>
+                            <div class="text-red-600 text-3xl">*</div>
                         </th>
                         <th scope="col"
                             class="hidden h-12 px-6 text-sm md:text-base md:text-center  font-medium border-l sm:table-cell first:border-l-0 stroke-slate-700 text-slate-700 bg-slate-100">
@@ -130,7 +134,7 @@ initPage()
             <div class="flex flex-row items-center gap-10">
                 <div class="flex flex-row my-6 md:w-96 items-center gap-2">
                     <label class="mr-4">
-                        账号号码<span class="text-red-600">*</span>
+                        账号号码<span class="text-red-600 text-3xl">*</span>
                     </label>
                     <input type="text" class="input input-bordered grow w-36" readonly
                            v-model="customerStore.getPrimeAccount.id"/>
@@ -150,7 +154,7 @@ initPage()
                 </div>
                 <div class="flex flex-row my-6 md:w-80 items-center gap-2">
                     <label class="mr-4">
-                        客户类型<span class="text-red-600">*</span>
+                        客户类型<span class="text-red-600 text-3xl">*</span>
                     </label>
                     <select class="select select-bordered w-48"
                             v-model="customerStore.getCustomer.cuacctCls">
@@ -175,7 +179,7 @@ initPage()
             <div class="flex flex-row items-center gap-10 justify-between">
                 <div class="flex my-6 md:w-96 gap-2 items-center justify-between">
                     <label class="mr-4">
-                        三方存管银行<span class="text-red-600">*</span>
+                        三方存管银行<span class="text-red-600 text-3xl">*</span>
                     </label>
                     <select class="select select-bordered w-56"
                             v-model="customerStore.getBankInfo.bankName">
@@ -188,14 +192,14 @@ initPage()
                 </div>
                 <div class="flex my-6 md:w-80 gap-2 items-center justify-between">
                     <label class="gap-2">
-                        银行账号<span class="text-red-600">*</span>
+                        银行账号<span class="text-red-600 text-3xl">*</span>
                     </label>
                     <input type="text" class="input input-bordered grow w-36"
                            v-model="customerStore.getBankInfo.account"/>
                 </div>
                 <div class="flex my-6 md:w-80 gap-2 items-center justify-between">
                     <label class="gap-2">
-                        账号密码<span class="text-red-600">*</span>
+                        账号密码<span class="text-red-600 text-3xl">*</span>
                     </label>
                     <input type="password" class="input input-bordered grow w-36"
                            v-model="customerStore.getBankInfo.password"/>

@@ -81,7 +81,7 @@ const errorMsg = ref("数据库连接错误!")
                             <li class="flex items-start gap-4 px-4 py-3 hover:bg-gray-200 cursor-pointer">
                                 <div class="flex flex-col gap-0 min-h-[2rem] items-start justify-center">
                                     <h4 class="text-base text-slate-700 select-none">
-                                        现场免冠照<span class="text-red-600">*</span>
+                                        现场免冠照<span class="text-green-600">*</span>
                                     </h4>
                                 </div>
                             </li>
@@ -190,6 +190,9 @@ const errorMsg = ref("数据库连接错误!")
              id="modal" role="document">
             <!-- Modal header -->
             <header id="header-5a" class="flex flex-col items-center gap-4">
+                <div class="text-center text-6xl text-sky-400">
+                    <span class="mdi mdi-help"></span>
+                </div>
                 <h3 class="flex-1 text-xl font-medium text-slate-700">确认提交客户信息？</h3>
             </header>
             <!-- Modal body -->
