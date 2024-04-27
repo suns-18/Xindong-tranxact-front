@@ -44,7 +44,7 @@ const routineBack = () => {
 
 <template>
     <div class="m-4">
-        <div id="timeline" class=" hidden lg:flex gap-10 items-center justify-items-center align-middle justify-center">
+        <div id="timeline" class="hidden lg:flex gap-10 items-center justify-items-center align-middle justify-center">
             <ul class="timeline items-center justify-items-center">
                 <template v-for="(item,index) in routine">
                     <li>

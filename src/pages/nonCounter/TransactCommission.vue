@@ -238,9 +238,9 @@ const submitCommission = async () => {
 }
 const errorMsg = ref("数据库连接错误")
 const errorMsgDisplay = ref(false)
-const goHome = async () => {
+const goHome = () => {
     showSuccessSubmit.value = false
-    await router.push("/nonCounter")
+    router.push("/nonCounter")
 }
 
 const units = ref<string[]>([])
