@@ -437,6 +437,16 @@ const commission = ref<CommissionRecord[]>([])
                                 class="before:w-24 before:inline-block before:font-medium before:text-slate-700 before:content-[attr(data-th)':'] sm:before:content-none flex items-center sm:table-cell h-12 px-2 text-sm transition duration-300 sm:border-t sm:border-l first:border-l-0 border-slate-200 stroke-slate-500 text-slate-500 ">
                                 {{ item.orderInfo.stockId }}
                             </td>
+                            <td data-th="委托状态"
+                                class="before:w-24 before:inline-block before:font-medium
+                                before:text-slate-700 before:content-[attr(data-th)':']
+                                sm:before:content-none flex items-center sm:table-cell
+                                h-12 px-2 text-sm transition duration-300
+                                sm:border-t sm:border-l first:border-l-0
+                                border-slate-200 stroke-slate-500 text-slate-500 ">
+                                <span :class="orderStatusStyle(item.orderInfo.orderStatus)"
+                                      v-text="ORDER_STATUS[item.orderInfo.orderStatus]"/>
+                            </td>
                             <td data-th="证券业务"
                                 class="before:w-24 before:inline-block
                                 before:font-medium before:text-slate-700
