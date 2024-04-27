@@ -3,7 +3,7 @@ import {Customer, ID_TYPE} from "@/ts/model/customer.ts";
 import {ref} from "vue";
 import axios from "@/ts/axios.ts";
 import {defaultChipStyle} from "@/ts/chip-status.ts";
-import {CommissionRecord, CommissionRequest} from "@/ts/model/commission.ts";
+import {CommissionRecord, CommissionRequest, TRD_ID} from "@/ts/model/commission.ts";
 import router from "@/ts/router.ts";
 import {formatDateTime, toTop} from "@/ts/window-api.ts";
 import {Transaction} from "@/ts/model/transaction.ts";
@@ -334,10 +334,6 @@ const okDealCheck = () => {
                                 class="hidden h-12 px-2 text-sm font-medium border-l sm:table-cell first:border-l-0 stroke-slate-700 text-slate-700 bg-slate-100">
                                 委托状态
                             </th>
-                            <!--                        <th scope="col"-->
-                            <!--                            class="hidden h-12 px-2 text-sm font-medium border-l sm:table-cell first:border-l-0 stroke-slate-700 text-slate-700 bg-slate-100">-->
-                            <!--                            股份解冻数量-->
-                            <!--                        </th>-->
                             <th scope="col"
                                 class="hidden h-12 px-2 text-sm font-medium border-l sm:table-cell first:border-l-0 stroke-slate-700 text-slate-700 bg-slate-100">
                                 证券业务
@@ -448,36 +444,20 @@ const okDealCheck = () => {
                         <tr class="text-center">
                             <th scope="col"
                                 class="hidden h-12 px-2 text-sm font-medium border-l sm:table-cell first:border-l-0 stroke-slate-700 text-slate-700 bg-slate-100">
+                                成交流水号
+                            </th>
+                            <th scope="col"
+                                class="hidden h-12 px-2 text-sm font-medium border-l sm:table-cell first:border-l-0 stroke-slate-700 text-slate-700 bg-slate-100">
                                 合同序号
                             </th>
-
                             <th scope="col"
                                 class="hidden h-12 px-2 text-sm font-medium border-l sm:table-cell first:border-l-0 stroke-slate-700 text-slate-700 bg-slate-100">
                                 交易账户
                             </th>
-                            <th scope="col"
-                                class="hidden h-12 px-2 text-sm font-medium border-l sm:table-cell first:border-l-0 stroke-slate-700 text-slate-700 bg-slate-100">
-                                证券代码
-                            </th>
-                            <th scope="col"
-                                class="hidden h-12 px-2 text-sm font-medium border-l sm:table-cell first:border-l-0 stroke-slate-700 text-slate-700 bg-slate-100">
-                                交易时间
-                            </th>
+
                             <th scope="col"
                                 class="hidden h-12 px-2 text-sm font-medium border-l sm:table-cell first:border-l-0 stroke-slate-700 text-slate-700 bg-slate-100">
                                 证券业务
-                            </th>
-                            <th scope="col"
-                                class="hidden h-12 px-2 text-sm font-medium border-l sm:table-cell first:border-l-0 stroke-slate-700 text-slate-700 bg-slate-100">
-                                委托数量
-                            </th>
-                            <th scope="col"
-                                class="hidden h-12 px-2 text-sm font-medium border-l sm:table-cell first:border-l-0 stroke-slate-700 text-slate-700 bg-slate-100">
-                                委托价格
-                            </th>
-                            <th scope="col"
-                                class="hidden h-12 px-2 text-sm font-medium border-l sm:table-cell first:border-l-0 stroke-slate-700 text-slate-700 bg-slate-100">
-                                委托金额
                             </th>
                             <th scope="col"
                                 class="hidden h-12 px-2 text-sm font-medium border-l sm:table-cell first:border-l-0 stroke-slate-700 text-slate-700 bg-slate-100">
@@ -491,9 +471,17 @@ const okDealCheck = () => {
                                 class="hidden h-12 px-2 text-sm font-medium border-l sm:table-cell first:border-l-0 stroke-slate-700 text-slate-700 bg-slate-100">
                                 成交金额
                             </th>
+                            <th scope="col"
+                                class="hidden h-12 px-2 text-sm font-medium border-l sm:table-cell first:border-l-0 stroke-slate-700 text-slate-700 bg-slate-100">
+                                确认时间
+                            </th>
                         </tr>
                         <tr v-for="item in transactions"
                             class="block border-b sm:table-row text-center last:border-b-0 border-slate-200 sm:border-none">
+                            <td data-th="成交流水号"
+                                class="before:w-24 before:inline-block before:font-medium before:text-slate-700 before:content-[attr(data-th)':'] sm:before:content-none flex items-center sm:table-cell h-12 px-2 text-sm transition duration-300 sm:border-t sm:border-l first:border-l-0 border-slate-200 stroke-slate-500 text-slate-500 ">
+                                {{ item.transaction.id }}
+                            </td>
                             <td data-th="合同序号"
                                 class="before:w-24 before:inline-block before:font-medium before:text-slate-700 before:content-[attr(data-th)':'] sm:before:content-none flex items-center sm:table-cell h-12 px-2 text-sm transition duration-300 sm:border-t sm:border-l first:border-l-0 border-slate-200 stroke-slate-500 text-slate-500 ">
                                 {{ item.transaction.orderId }}
@@ -502,13 +490,12 @@ const okDealCheck = () => {
                                 class="before:w-24 before:inline-block before:font-medium before:text-slate-700 before:content-[attr(data-th)':'] sm:before:content-none flex items-center sm:table-cell h-12 px-2 text-sm transition duration-300 sm:border-t sm:border-l first:border-l-0 border-slate-200 stroke-slate-500 text-slate-500 ">
                                 {{ item.followAccountId }}
                             </td>
-                            <td data-th="证券代码"
+
+                            <td data-th="证券业务"
                                 class="before:w-24 before:inline-block before:font-medium before:text-slate-700 before:content-[attr(data-th)':'] sm:before:content-none flex items-center sm:table-cell h-12 px-2 text-sm transition duration-300 sm:border-t sm:border-l first:border-l-0 border-slate-200 stroke-slate-500 text-slate-500 ">
-                                {{ item.transaction.stockId }}
-                            </td>
-                            <td data-th="交易时间"
-                                class="before:w-24 before:inline-block before:font-medium before:text-slate-700 before:content-[attr(data-th)':'] sm:before:content-none flex items-center sm:table-cell h-12 px-2 text-sm transition duration-300 sm:border-t sm:border-l first:border-l-0 border-slate-200 stroke-slate-500 text-slate-500 ">
-                                {{ item.transaction.transactTime }}
+                                <span :class="item.trdId==`B`?`chip-red`:`chip-green`">
+                                    {{ TRD_ID[item.trdId] }}
+                                </span>
                             </td>
                             <td data-th="成交数量"
                                 class="before:w-24 before:inline-block before:font-medium before:text-slate-700 before:content-[attr(data-th)':'] sm:before:content-none flex items-center sm:table-cell h-12 px-2 text-sm transition duration-300 sm:border-t sm:border-l first:border-l-0 border-slate-200 stroke-slate-500 text-slate-500 ">
@@ -516,11 +503,15 @@ const okDealCheck = () => {
                             </td>
                             <td data-th="成交价格"
                                 class="before:w-24 before:inline-block before:font-medium before:text-slate-700 before:content-[attr(data-th)':'] sm:before:content-none flex items-center sm:table-cell h-12 px-2 text-sm transition duration-300 sm:border-t sm:border-l first:border-l-0 border-slate-200 stroke-slate-500 text-slate-500 ">
-                                {{ item.transaction.price }}
+                                ￥{{ item.transaction.price }}
                             </td>
                             <td data-th="成交金额"
                                 class="before:w-24 before:inline-block before:font-medium before:text-slate-700 before:content-[attr(data-th)':'] sm:before:content-none flex items-center sm:table-cell h-12 px-2 text-sm transition duration-300 sm:border-t sm:border-l first:border-l-0 border-slate-200 stroke-slate-500 text-slate-500 ">
-                                {{ item.transactionBalance }}
+                                ￥{{ item.transactionBalance }}
+                            </td>
+                            <td data-th="确认时间"
+                                class="before:w-24 before:inline-block before:font-medium before:text-slate-700 before:content-[attr(data-th)':'] sm:before:content-none flex items-center sm:table-cell h-12 px-2 text-sm transition duration-300 sm:border-t sm:border-l first:border-l-0 border-slate-200 stroke-slate-500 text-slate-500 ">
+                                {{ formatDateTime(item.transaction.transactTime) }}
                             </td>
                         </tr>
                         </tbody>

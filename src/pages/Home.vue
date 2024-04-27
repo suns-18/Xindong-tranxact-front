@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import {onMounted, onUnmounted, ref} from "vue";
 import {onBeforeRouteLeave} from "vue-router";
+import axios from "@/ts/axios.ts";
 
 interface MenuItem {
     title: string,
@@ -11,7 +12,12 @@ interface MenuItem {
 
 const menuItems: MenuItem[] = [
     {title: "客户开户", path: "/accept/register", icon: "mdi mdi-account-plus", desc: "为新客户创建、登记账户"},
-    {title: "委托登记", path: "/nonCounter/transactCommission", icon: "mdi mdi-table-arrow-up", desc: "为新客户创建、登记账户"},
+    {
+        title: "委托登记",
+        path: "/nonCounter/transactCommission",
+        icon: "mdi mdi-table-arrow-up",
+        desc: "为新客户创建、登记账户"
+    },
     {title: "撤单申请", path: "/nonCounter/withdraw", icon: "mdi mdi-table-cancel", desc: "为新客户创建、登记账户"},
     {title: "成交确认", path: "/nonCounter/dealCheck", icon: "mdi mdi-table-check", desc: "为新客户创建、登记账户"},
 ]
@@ -61,9 +67,14 @@ const connectInfoMessageServer = () => {
         }
     }
 }
+const initMarketInfo = async () => {
+    let resp = await axios.post("/marketInfo/init")
+    if(!resp.data) return
+}
 
 const initPage = async () => {
     connectInfoMessageServer()
+    await initMarketInfo()
 }
 
 onBeforeRouteLeave(() => socketConn.close())
@@ -87,7 +98,7 @@ initPage()
 	<!-- End Chip notification with leading button -->
 	<!-- Component: Card with icon -->
     <div class="flex flex-row text-center items-center justify-center justify-items-center align-middle">
-        <div ></div>
+        <div></div>
         <div>
             <img src="/home-banner-1.jpg" alt="HOME_BANNER" class="aspect-video w-[60vw] h-[18rem]"/>
         </div>

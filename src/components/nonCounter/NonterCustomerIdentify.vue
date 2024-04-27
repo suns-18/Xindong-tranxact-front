@@ -8,6 +8,7 @@ import {FollowAccount} from "@/ts/model/follow-account.ts";
 import {Position} from "@/ts/model/position.ts";
 import {DEFAULT_BRANDS, MarketInfo} from "@/ts/model/market.ts";
 import {CommissionRecord, CommissionRequest} from "@/ts/model/commission.ts";
+import {Stock} from "@/ts/model/stock.ts";
 
 const showAlert = ref(false)
 const customerId = ref("")
@@ -57,7 +58,32 @@ const searchCustomers = async () => {
 
     resp = await axios.get(`/orderInfo/getByPrimeAccountId?primeAccountId=${customer.value.id}`)
     if (!resp.data) return
-    commission.value = resp.data["data"]
+    let commissionRespList = resp.data["data"]
+
+    let relStocks = []
+    commission.value.length = 0
+
+    await Promise.all(commissionRespList.map(async (item) => {
+        let r = await axios.get(`/stock/getById?id=${item.orderInfo.stockId}`)
+        if (r.data) relStocks.push(r.data['data'])
+    }))
+
+    commissionRespList.forEach(c => {
+        const matchResult: Stock | undefined = relStocks.find(
+            r => r.id === c.orderInfo.stockId
+        )
+        if (matchResult) {
+            commission.value.push({
+                currency: c.currency,
+                dealBalance: c.dealBalance,
+                frozenBalance: c.frozenBalance,
+                market: matchResult.market,
+                orderBalance: c.orderBalance,
+                orderInfo: c.orderInfo,
+                unfrozenBalance: c.unfrozenBalance
+            })
+        }
+    })
 }
 
 const customer = ref<Customer>()
@@ -283,7 +309,7 @@ const commission = ref<CommissionRecord[]>([])
                             <td data-th="交易板块"
                                 class="before:w-24 before:inline-block before:font-medium before:text-slate-700 before:content-[attr(data-th)':'] sm:before:content-none flex items-center sm:table-cell h-12 px-2 text-sm transition duration-300 sm:border-t sm:border-l first:border-l-0 border-slate-200 stroke-slate-500 text-slate-500 ">
                                 <span :class="defaultChipStyle(item.position.market)"
-                                      v-text="DEFAULT_BRANDS[item.position.market]" />
+                                      v-text="DEFAULT_BRANDS[item.position.market]"/>
                             </td>
                             <td data-th="证券昨日余额"
                                 class="before:w-24 before:inline-block before:font-medium before:text-slate-700 before:content-[attr(data-th)':'] sm:before:content-none flex items-center sm:table-cell h-12 px-2 text-sm transition duration-300 sm:border-t sm:border-l first:border-l-0 border-slate-200 stroke-slate-500 text-slate-500 ">
@@ -292,7 +318,7 @@ const commission = ref<CommissionRecord[]>([])
                             <td data-th="股份余额"
                                 class="before:w-24 before:inline-block before:font-medium before:text-slate-700 before:content-[attr(data-th)':'] sm:before:content-none flex items-center sm:table-cell h-12 px-2 text-sm transition duration-300 sm:border-t sm:border-l first:border-l-0 border-slate-200 stroke-slate-500 text-slate-500 ">
                                 {{
-                                    item.position.shareTotal
+																item.position.shareTotal
                                 }}
                             </td>
                             <td data-th="股份冻结数量"
@@ -380,10 +406,6 @@ const commission = ref<CommissionRecord[]>([])
                             </th>
                             <th scope="col"
                                 class="hidden h-12 px-2 text-sm font-medium border-l sm:table-cell first:border-l-0 stroke-slate-700 text-slate-700 bg-slate-100">
-                                冻结金额
-                            </th>
-                            <th scope="col"
-                                class="hidden h-12 px-2 text-sm font-medium border-l sm:table-cell first:border-l-0 stroke-slate-700 text-slate-700 bg-slate-100">
                                 成交数量
                             </th>
                             <th scope="col"
@@ -399,7 +421,8 @@ const commission = ref<CommissionRecord[]>([])
                             </td>
                             <td data-th="交易板块"
                                 class="before:w-24 before:inline-block before:font-medium before:text-slate-700 before:content-[attr(data-th)':'] sm:before:content-none flex items-center sm:table-cell h-12 px-2 text-sm transition duration-300 sm:border-t sm:border-l first:border-l-0 border-slate-200 stroke-slate-500 text-slate-500 ">
-                                {{ item.orderInfo.stockId }}
+                                <span :class="defaultChipStyle(item.market)"
+                                      v-text="DEFAULT_BRANDS[item.market]"/>
                             </td>
                             <td data-th="交易账户"
                                 class="before:w-24 before:inline-block before:font-medium before:text-slate-700 before:content-[attr(data-th)':'] sm:before:content-none flex items-center sm:table-cell h-12 px-2 text-sm transition duration-300 sm:border-t sm:border-l first:border-l-0 border-slate-200 stroke-slate-500 text-slate-500 ">
@@ -433,10 +456,6 @@ const commission = ref<CommissionRecord[]>([])
                                 class="before:w-24 before:inline-block before:font-medium before:text-slate-700 before:content-[attr(data-th)':'] sm:before:content-none flex items-center sm:table-cell h-12 px-2 text-sm transition duration-300 sm:border-t sm:border-l first:border-l-0 border-slate-200 stroke-slate-500 text-slate-500 ">
                                 {{ item.orderBalance.toFixed(4) }}
                             </td>
-                            <td data-th="冻结金额"
-                                class="before:w-24 before:inline-block before:font-medium before:text-slate-700 before:content-[attr(data-th)':'] sm:before:content-none flex items-center sm:table-cell h-12 px-2 text-sm transition duration-300 sm:border-t sm:border-l first:border-l-0 border-slate-200 stroke-slate-500 text-slate-500 ">
-                                {{ item.frozenBalance }}
-                            </td>
                             <td data-th="成交数量"
                                 class="before:w-24 before:inline-block before:font-medium before:text-slate-700 before:content-[attr(data-th)':'] sm:before:content-none flex items-center sm:table-cell h-12 px-2 text-sm transition duration-300 sm:border-t sm:border-l first:border-l-0 border-slate-200 stroke-slate-500 text-slate-500 ">
                                 {{ item.orderInfo.dealAmount }}
@@ -449,7 +468,8 @@ const commission = ref<CommissionRecord[]>([])
                             </td>
                         </tr>
                         </tbody>
-                    </table></div>
+                    </table>
+                </div>
                 <div class="container-big text-center py-16" v-else>
                     当前客户无委托记录
                 </div>

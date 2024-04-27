@@ -1,7 +1,15 @@
+import {MarketInfo} from "@/ts/model/market.ts";
+
 export interface CommissionRequest {
     customerId: number;
     orderInfo: OrderInfo;
 }
+
+export const TRD_ID: { [key: string]: string } = {
+    "B": "买入",
+    "S": "卖出",
+};
+
 interface OrderInfo {
     id: number;
     unit: number;
@@ -29,4 +37,5 @@ export interface CommissionRecord {
     frozenBalance: number;
     unfrozenBalance: number;
     currency: string;
+    market: number
 }
