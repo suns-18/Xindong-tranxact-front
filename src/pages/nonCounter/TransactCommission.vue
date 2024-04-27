@@ -3,12 +3,12 @@
 import {CUACCT_CLS, CUACCT_STATUS, Customer, ID_TYPE} from "@/ts/model/customer.ts";
 import {computed, ref} from "vue";
 import axios from "@/ts/axios.ts";
-import {defaultChipStyle} from "@/ts/chip-status.ts";
+import {defaultChipStyle, orderStatusStyle} from "@/ts/chip-status.ts";
 import {Stock} from "@/ts/model/stock.ts";
 import {CURRENCIES, DEFAULT_BRANDS, MarketInfo} from "@/ts/model/market.ts";
 import {FollowAccount} from "@/ts/model/follow-account.ts";
 import {PrimeAccount} from "@/ts/model/prime-account.ts";
-import {CommissionRecord, CommissionRequest} from "@/ts/model/commission.ts";
+import {CommissionRecord, CommissionRequest, ORDER_STATUS, TRD_ID} from "@/ts/model/commission.ts";
 import {Position} from "@/ts/model/position.ts";
 import router from "@/ts/router.ts";
 import {postCustomer} from "@/ts/request-promises.ts";
@@ -77,7 +77,7 @@ const searchCustomers = async () => {
         let r = await axios.get(`/stock/getById?id=${item.orderInfo.stockId}`)
         if (r.data) relStocks.push(r.data['data'])
     }))
-    
+
     commissions.forEach(c => {
         const matchResult: Stock | undefined = relStocks.find(
             r => r.id === c.orderInfo.stockId
@@ -854,11 +854,11 @@ const units = ref<string[]>([])
                             </td>
                             <td data-th="证券昨日余额"
                                 class="before:w-24 before:inline-block before:font-medium before:text-slate-700 before:content-[attr(data-th)':'] sm:before:content-none flex items-center sm:table-cell h-12 px-2 text-sm transition duration-300 sm:border-t sm:border-l first:border-l-0 border-slate-200 stroke-slate-500 text-slate-500 ">
-                                {{ item.marketInfo.yesterdayCollectionPrice }}
+                                ￥{{ item.marketInfo.yesterdayCollectionPrice.toFixed(4) }}
                             </td>
                             <td data-th="股份余额"
                                 class="before:w-24 before:inline-block before:font-medium before:text-slate-700 before:content-[attr(data-th)':'] sm:before:content-none flex items-center sm:table-cell h-12 px-2 text-sm transition duration-300 sm:border-t sm:border-l first:border-l-0 border-slate-200 stroke-slate-500 text-slate-500 ">
-                                {{
+                                ￥{{
 																(item.marketInfo.currentPrice *
 																	item.marketInfo.availableQuantity).toFixed(4)
                                 }}
@@ -979,12 +979,26 @@ const units = ref<string[]>([])
                                 {{ item.orderInfo.stockId }}
                             </td>
                             <td data-th="委托状态"
-                                class="before:w-24 before:inline-block before:font-medium before:text-slate-700 before:content-[attr(data-th)':'] sm:before:content-none flex items-center sm:table-cell h-12 px-2 text-sm transition duration-300 sm:border-t sm:border-l first:border-l-0 border-slate-200 stroke-slate-500 text-slate-500 ">
-                                {{ item.orderInfo.orderStatus }}
+                                class="before:w-24 before:inline-block before:font-medium
+                                before:text-slate-700 before:content-[attr(data-th)':']
+                                sm:before:content-none flex items-center sm:table-cell
+                                h-12 px-2 text-sm transition duration-300
+                                sm:border-t sm:border-l first:border-l-0
+                                border-slate-200 stroke-slate-500 text-slate-500 ">
+                                <span :class="orderStatusStyle(item.orderInfo.orderStatus)"
+                                      v-text="ORDER_STATUS[item.orderInfo.orderStatus]"/>
                             </td>
                             <td data-th="证券业务"
-                                class="before:w-24 before:inline-block before:font-medium before:text-slate-700 before:content-[attr(data-th)':'] sm:before:content-none flex items-center sm:table-cell h-12 px-2 text-sm transition duration-300 sm:border-t sm:border-l first:border-l-0 border-slate-200 stroke-slate-500 text-slate-500 ">
-                                {{ item.orderInfo.stkCls }}
+                                class="before:w-24 before:inline-block
+                                before:font-medium before:text-slate-700
+                                before:content-[attr(data-th)':']
+                                sm:before:content-none flex flex-row gap-2
+                                items-center sm:table-cell
+                                h-12 px-2 text-sm transition duration-300 sm:border-t sm:border-l first:border-l-0 border-slate-200 stroke-slate-500 text-slate-500 ">
+                                <span :class="item.orderInfo.trdId==`B`?`chip-red`:`chip-green`">
+                                    {{ TRD_ID[item.orderInfo.trdId] }}
+                                </span>
+                                <div class="flex-col chip-green mx-1" v-text="item.orderInfo.stkCls?`股票`:`其它`"/>
                             </td>
                             <td data-th="委托数量"
                                 class="before:w-24 before:inline-block before:font-medium before:text-slate-700 before:content-[attr(data-th)':'] sm:before:content-none flex items-center sm:table-cell h-12 px-2 text-sm transition duration-300 sm:border-t sm:border-l first:border-l-0 border-slate-200 stroke-slate-500 text-slate-500 ">
@@ -992,11 +1006,11 @@ const units = ref<string[]>([])
                             </td>
                             <td data-th="委托价格"
                                 class="before:w-24 before:inline-block before:font-medium before:text-slate-700 before:content-[attr(data-th)':'] sm:before:content-none flex items-center sm:table-cell h-12 px-2 text-sm transition duration-300 sm:border-t sm:border-l first:border-l-0 border-slate-200 stroke-slate-500 text-slate-500 ">
-                                {{ item.orderInfo.orderPrice }}
+                                ￥{{ item.orderInfo.orderPrice.toFixed(4) }}
                             </td>
                             <td data-th="委托金额"
                                 class="before:w-24 before:inline-block before:font-medium before:text-slate-700 before:content-[attr(data-th)':'] sm:before:content-none flex items-center sm:table-cell h-12 px-2 text-sm transition duration-300 sm:border-t sm:border-l first:border-l-0 border-slate-200 stroke-slate-500 text-slate-500 ">
-                                {{ item.orderBalance.toFixed(4) }}
+                                ￥{{ item.orderBalance.toFixed(4) }}
                             </td>
                             <td data-th="成交数量"
                                 class="before:w-24 before:inline-block before:font-medium before:text-slate-700 before:content-[attr(data-th)':'] sm:before:content-none flex items-center sm:table-cell h-12 px-2 text-sm transition duration-300 sm:border-t sm:border-l first:border-l-0 border-slate-200 stroke-slate-500 text-slate-500 ">

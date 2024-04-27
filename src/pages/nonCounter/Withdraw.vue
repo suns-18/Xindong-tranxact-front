@@ -315,10 +315,6 @@ const tabMenus = ["可撤销", "已撤销"]
                             </th>
                             <th scope="col"
                                 class="hidden h-12 px-2 text-sm font-medium border-l sm:table-cell first:border-l-0 stroke-slate-700 text-slate-700 bg-slate-100">
-                                冻结金额
-                            </th>
-                            <th scope="col"
-                                class="hidden h-12 px-2 text-sm font-medium border-l sm:table-cell first:border-l-0 stroke-slate-700 text-slate-700 bg-slate-100">
                                 成交数量
                             </th>
                             <th scope="col"
@@ -363,15 +359,11 @@ const tabMenus = ["可撤销", "已撤销"]
                             </td>
                             <td data-th="委托价格"
                                 class="before:w-24 before:inline-block before:font-medium before:text-slate-700 before:content-[attr(data-th)':'] sm:before:content-none flex items-center sm:table-cell h-12 px-2 text-sm transition duration-300 sm:border-t sm:border-l first:border-l-0 border-slate-200 stroke-slate-500 text-slate-500 ">
-                                {{ item.orderInfo.orderPrice }}
+                                ￥{{ item.orderInfo.orderPrice.toFixed(4) }}
                             </td>
                             <td data-th="委托金额"
                                 class="before:w-24 before:inline-block before:font-medium before:text-slate-700 before:content-[attr(data-th)':'] sm:before:content-none flex items-center sm:table-cell h-12 px-2 text-sm transition duration-300 sm:border-t sm:border-l first:border-l-0 border-slate-200 stroke-slate-500 text-slate-500 ">
-                                {{ item.orderBalance }}
-                            </td>
-                            <td data-th="冻结金额"
-                                class="before:w-24 before:inline-block before:font-medium before:text-slate-700 before:content-[attr(data-th)':'] sm:before:content-none flex items-center sm:table-cell h-12 px-2 text-sm transition duration-300 sm:border-t sm:border-l first:border-l-0 border-slate-200 stroke-slate-500 text-slate-500 ">
-                                {{ item.frozenBalance }}
+                                ￥{{ item.orderBalance.toFixed(4) }}
                             </td>
                             <td data-th="成交数量"
                                 class="before:w-24 before:inline-block before:font-medium before:text-slate-700 before:content-[attr(data-th)':'] sm:before:content-none flex items-center sm:table-cell h-12 px-2 text-sm transition duration-300 sm:border-t sm:border-l first:border-l-0 border-slate-200 stroke-slate-500 text-slate-500 ">
